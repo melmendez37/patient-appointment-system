@@ -33,7 +33,7 @@ export const sendAppointmentEmail = async ({
                 data: [
                     {
                     "Patient Name": patientName,
-                    "Appointment Date": startTime.toLocaleString(),
+                    "Appointment Date": startTime,
                     "Status": status,
                     "Reference Number": referenceNumber,
                     },
@@ -52,9 +52,9 @@ export const sendAppointmentEmail = async ({
             html: mail,
         };
 
-        transporter.sendMail(message)
+        await transporter.sendMail(message)
         .then(() => {
-            console.log("Email sent successfully");
+            console.log("Email sent successfully", message);
         })
         .catch((error) => {
             console.error("Error sending email:", error);
