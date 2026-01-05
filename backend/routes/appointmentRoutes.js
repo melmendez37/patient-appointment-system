@@ -3,8 +3,8 @@ import { Appointment } from "../models/appointmentModel.js";
 import { User } from "../models/userModel.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 import authorizeRoles from "../middleware/authorizeRoles.js";
-import nodemailer from "nodemailer";
-import Mailgen from "mailgen";
+import { Availability } from "../models/availabilityModel.js";
+import { generateAvailableSlots } from "../utils/generateAvailableSlots.js";
 import { sendAppointmentEmail } from "../utils/emailService.js";
 
 const router = express.Router();
@@ -33,6 +33,43 @@ router.post("/", authMiddleware, authorizeRoles("staff"), async (req, res) => {
 
     if(req.user.doctor.toString() !== req.body.doctor){
       return res.status(403).send({ message: "You can only create appointment for your assigned doctor" });
+    }
+
+    const targetDate = new Date(req.body.startTime);
+    const dayOfWeek = targetDate.getUTCDay(); // 0 (Sun) - 6 (Sat)
+
+    //GET availability for that doctor on that day
+    const availability = await Availability.findOne({
+      doctor: req.body.doctor,
+      dayOfWeek: dayOfWeek,
+      isAvailable: true,
+    });
+
+    if (!availability) return res.status(400).send({ message: "Doctor is not available on the selected time" });
+
+    //GET BOOKED appointments for that doctor on that day
+    const startOfDay = new Date(targetDate);
+    startOfDay.setUTCHours(0, 0, 0, 0);
+    const endOfDay = new Date(targetDate);
+    endOfDay.setUTCHours(23, 59, 59, 999);
+
+    const bookedAppointments = await Appointment.find({
+      doctor: req.body.doctor,
+      startTime: { $gte: startOfDay, $lte: endOfDay },
+      status: "scheduled",
+    });
+
+    const slots = generateAvailableSlots(
+      targetDate,
+      availability.startTime,
+      availability.endTime,
+      bookedAppointments
+    );
+
+    //check if requested startTime is in availableSlots
+    const requestedStartTime = new Date(req.body.startTime);
+    if(!slots.some(slot => slot.getTime() === requestedStartTime.getTime())){
+      return res.status(400).send({ message: "Requested time slot is not available" });
     }
 
     const newAppointment = new Appointment({
