@@ -4,6 +4,7 @@ import { Appointment } from "../models/appointmentModel.js";
 import { User } from "../models/userModel.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 import authorizeRoles from "../middleware/authorizeRoles.js";
+import { generateAvailableSlots } from "../utils/generateAvailableSlots.js";
 const router = express.Router();
 
 //Add an availability/schedule (staff/admin) DONE
@@ -154,13 +155,34 @@ router.get(
           .send({ message: "No available slots for this date" });
       }
 
+      const startOfDay = new Date(Date.UTC(
+        targetDate.getFullYear(),
+        targetDate.getMonth(),
+        targetDate.getDate(),
+        0, 0, 0
+      ));
+      const endOfDay = new Date(Date.UTC(
+        targetDate.getFullYear(),
+        targetDate.getMonth(),
+        targetDate.getDate(),
+        23, 59, 59, 999
+      ));
+
+
       //get booked appointments for that day
       const bookedAppointments = await Appointment.find({
         doctor: doctorId,
-        startTime: { $in: slots },
+        startTime: { $gte: startOfDay, $lte: endOfDay },
         status: "scheduled",
       });
 
+      const availableSlots = generateAvailableSlots(
+        targetDate,
+        availability.startTime,
+        availability.endTime,
+        bookedAppointments
+      );
+      
       
       res.status(200).json( availableSlots );
     } catch (error) {
