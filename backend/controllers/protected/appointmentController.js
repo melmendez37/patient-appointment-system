@@ -1,8 +1,8 @@
-import { User } from "../../models/userModel";
-import { Appointment } from "../../models/appointmentModel";
-import { Availability } from "../../models/availabilityModel";
-import { sendAppointmentEmail } from "../../utils/emailService";
-import { generateAvailableSlots } from "../../utils/generateAvailableSlots";
+import { User } from "../../models/userModel.js";
+import { Appointment } from "../../models/appointmentModel.js";
+import { Availability } from "../../models/availabilityModel.js";
+import { sendAppointmentEmail } from "../../utils/emailService.js";
+import { generateAvailableSlots } from "../../utils/generateAvailableSlots.js";
 
 export const createAppointment = async (req, res) => {
   try {
