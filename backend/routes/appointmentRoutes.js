@@ -6,22 +6,23 @@ import authorizeRoles from "../middleware/authorizeRoles.js";
 import { Availability } from "../models/availabilityModel.js";
 import { generateAvailableSlots } from "../utils/generateAvailableSlots.js";
 import { sendAppointmentEmail } from "../utils/emailService.js";
+import { validateFields } from "../middleware/validateFields.js";
 
 const router = express.Router();
 
 //Create a new appointment (staff) DONE
-router.post("/", authMiddleware, authorizeRoles("staff"), async (req, res) => {
+router.post("/", 
+  authMiddleware, 
+  authorizeRoles("staff"),
+  validateFields([
+    "patientName",
+    "patientEmail",
+    "patientPhone",
+    "doctor",
+    "startTime",
+  ]),
+  async (req, res) => {
   try {
-    if (
-      !req.body.patientName ||
-      !req.body.patientEmail ||
-      !req.body.patientPhone ||
-      !req.body.doctor ||
-      !req.body.startTime
-    ) {
-      return res.status(400).send({ message: "All fields are required" });
-    }
-
     const doctorExists = await User.findOne({
       _id: req.body.doctor,
       role: "doctor",

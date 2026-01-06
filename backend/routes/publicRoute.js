@@ -4,100 +4,110 @@ import { Appointment } from "../models/appointmentModel.js";
 import { sendAppointmentEmail } from "../utils/emailService.js";
 import { Availability } from "../models/availabilityModel.js";
 import { generateAvailableSlots } from "../utils/generateAvailableSlots.js";
+import { validateFields } from "../middleware/validateFields.js";
 
 const router = express.Router();
 
 //Create a new appointment
-router.post("/", async (req, res) => {
-  try {
-    if (
-      !req.body.patientName ||
-      !req.body.patientEmail ||
-      !req.body.patientPhone ||
-      !req.body.doctor ||
-      !req.body.startTime
-    ) {
-      return res.status(400).send({ message: "All fields are required" });
+router.post(
+  "/",
+  validateFields([
+    "patientName",
+    "patientEmail",
+    "patientPhone",
+    "doctor",
+    "startTime",
+  ]),
+  async (req, res) => {
+    try {
+      const doctorExists = await User.findOne({
+        _id: req.body.doctor,
+        role: "doctor",
+      });
+
+      if (!doctorExists) {
+        return res.status(400).send({ message: "Doctor ID invalid" });
+      }
+
+      if (req.user.doctor.toString() !== req.body.doctor) {
+        return res.status(403).send({
+          message: "You can only create appointment for your assigned doctor",
+        });
+      }
+
+      const targetDate = new Date(req.body.startTime);
+      const dayOfWeek = targetDate.getUTCDay(); // 0 (Sun) - 6 (Sat)
+
+      //GET availability for that doctor on that day
+      const availability = await Availability.findOne({
+        doctor: req.body.doctor,
+        dayOfWeek: dayOfWeek,
+        isAvailable: true,
+      });
+
+      if (!availability)
+        return res
+          .status(400)
+          .send({ message: "Doctor is not available on the selected time" });
+
+      //GET BOOKED appointments for that doctor on that day
+      const startOfDay = new Date(targetDate);
+      startOfDay.setUTCHours(0, 0, 0, 0);
+      const endOfDay = new Date(targetDate);
+      endOfDay.setUTCHours(23, 59, 59, 999);
+
+      const bookedAppointments = await Appointment.find({
+        doctor: req.body.doctor,
+        startTime: { $gte: startOfDay, $lte: endOfDay },
+        status: "scheduled",
+      });
+
+      const slots = generateAvailableSlots(
+        targetDate,
+        availability.startTime,
+        availability.endTime,
+        bookedAppointments
+      );
+
+      //check if requested startTime is in availableSlots
+      const requestedStartTime = new Date(req.body.startTime);
+      if (
+        !slots.some((slot) => slot.getTime() === requestedStartTime.getTime())
+      ) {
+        return res
+          .status(400)
+          .send({ message: "Requested time slot is not available" });
+      }
+
+      const newAppointment = new Appointment({
+        patientName: req.body.patientName,
+        patientEmail: req.body.patientEmail,
+        patientPhone: req.body.patientPhone,
+        doctor: req.body.doctor,
+        startTime: new Date(req.body.startTime),
+        status: "scheduled",
+        isWalkIn: false,
+      });
+
+      const appointment = await Appointment.create(newAppointment);
+
+      //using Nodemailer to send email notification to patient; testing through Gmail + Mailgen
+      sendAppointmentEmail({
+        patientName: appointment.patientName,
+        patientEmail: appointment.patientEmail,
+        startTime: appointment.startTime,
+        status: appointment.status,
+        referenceNumber: appointment._id.toString().slice(-6).toUpperCase(), // last 6 digits of appointment ID
+      }).catch((error) => {
+        console.error("Error sending appointment email:", error);
+      });
+
+      res.status(201).send(appointment);
+    } catch (error) {
+      res.status(500).send({ message: "Error creating user", error });
     }
-
-    const doctorExists = await User.findOne({
-      _id: req.body.doctor,
-      role: "doctor",
-    });
-
-    if (!doctorExists) {
-      return res.status(400).send({ message: "Doctor ID invalid" });
-    }
-
-    if(req.user.doctor.toString() !== req.body.doctor){
-          return res.status(403).send({ message: "You can only create appointment for your assigned doctor" });
-        }
-    
-    const targetDate = new Date(req.body.startTime);
-    const dayOfWeek = targetDate.getUTCDay(); // 0 (Sun) - 6 (Sat)
-
-    //GET availability for that doctor on that day
-    const availability = await Availability.findOne({
-      doctor: req.body.doctor,
-      dayOfWeek: dayOfWeek,
-      isAvailable: true,
-    });
-
-    if (!availability) return res.status(400).send({ message: "Doctor is not available on the selected time" });
-
-    //GET BOOKED appointments for that doctor on that day
-    const startOfDay = new Date(targetDate);
-    startOfDay.setUTCHours(0, 0, 0, 0);
-    const endOfDay = new Date(targetDate);
-    endOfDay.setUTCHours(23, 59, 59, 999);
-
-    const bookedAppointments = await Appointment.find({
-      doctor: req.body.doctor,
-      startTime: { $gte: startOfDay, $lte: endOfDay },
-      status: "scheduled",
-    });
-
-    const slots = generateAvailableSlots(
-      targetDate,
-      availability.startTime,
-      availability.endTime,
-      bookedAppointments
-    );
-
-    //check if requested startTime is in availableSlots
-    const requestedStartTime = new Date(req.body.startTime);
-    if(!slots.some(slot => slot.getTime() === requestedStartTime.getTime())){
-      return res.status(400).send({ message: "Requested time slot is not available" });
-    }
-
-    const newAppointment = new Appointment({
-      patientName: req.body.patientName,
-      patientEmail: req.body.patientEmail,
-      patientPhone: req.body.patientPhone,
-      doctor: req.body.doctor,
-      startTime: new Date(req.body.startTime),
-      status: "scheduled",
-      isWalkIn: false,
-    });
-
-    const appointment = await Appointment.create(newAppointment);
-
-    //using Nodemailer to send email notification to patient; testing through Gmail + Mailgen
-    sendAppointmentEmail({
-      patientName: appointment.patientName,
-      patientEmail: appointment.patientEmail,
-      startTime: appointment.startTime,
-      status: appointment.status,
-      referenceNumber: appointment._id.toString().slice(-6).toUpperCase() // last 6 digits of appointment ID
-    }).catch((error) => {
-      console.error("Error sending appointment email:", error);
-    });
-
-    res.status(201).send(appointment);
-  } catch (error) {
-    res.status(500).send({ message: "Error creating user", error });
   }
-});
+);
 
 //Fetch all appointments (DELETE WHEN DONE TESTING)
 router.get("/", async (req, res) => {

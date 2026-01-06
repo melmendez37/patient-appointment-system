@@ -5,6 +5,7 @@ import { User } from "../models/userModel.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 import authorizeRoles from "../middleware/authorizeRoles.js";
 import { generateAvailableSlots } from "../utils/generateAvailableSlots.js";
+import { validateFields } from "../middleware/validateFields.js";
 const router = express.Router();
 
 //Add an availability/schedule (staff/admin) DONE
@@ -12,18 +13,15 @@ router.post(
   "/",
   authMiddleware,
   authorizeRoles("admin", "staff"),
+  validateFields([
+    "doctor",
+    "dayOfWeek",
+    "startTime",
+    "endTime",
+    "isAvailable",
+  ]),
   async (req, res) => {
     try {
-      if (
-        !req.body.doctor ||
-        !req.body.dayOfWeek ||
-        !req.body.startTime ||
-        !req.body.endTime ||
-        !req.body.isAvailable
-      ) {
-        return res.status(400).send({ message: "All fields are required" });
-      }
-
       const { role } = req.user;
 
       const doctorExists = await User.findOne({
@@ -37,11 +35,9 @@ router.post(
 
       if (role !== "admin") {
         if (req.user.doctor.toString() !== req.body.doctor) {
-          return res
-            .status(403)
-            .send({
-              message: "You can only add schedule for your assigned doctor",
-            });
+          return res.status(403).send({
+            message: "You can only add schedule for your assigned doctor",
+          });
         }
       }
 
@@ -155,19 +151,27 @@ router.get(
           .send({ message: "No available slots for this date" });
       }
 
-      const startOfDay = new Date(Date.UTC(
-        targetDate.getFullYear(),
-        targetDate.getMonth(),
-        targetDate.getDate(),
-        0, 0, 0
-      ));
-      const endOfDay = new Date(Date.UTC(
-        targetDate.getFullYear(),
-        targetDate.getMonth(),
-        targetDate.getDate(),
-        23, 59, 59, 999
-      ));
-
+      const startOfDay = new Date(
+        Date.UTC(
+          targetDate.getFullYear(),
+          targetDate.getMonth(),
+          targetDate.getDate(),
+          0,
+          0,
+          0
+        )
+      );
+      const endOfDay = new Date(
+        Date.UTC(
+          targetDate.getFullYear(),
+          targetDate.getMonth(),
+          targetDate.getDate(),
+          23,
+          59,
+          59,
+          999
+        )
+      );
 
       //get booked appointments for that day
       const bookedAppointments = await Appointment.find({
@@ -182,9 +186,8 @@ router.get(
         availability.endTime,
         bookedAppointments
       );
-      
-      
-      res.status(200).json( availableSlots );
+
+      res.status(200).json(availableSlots);
     } catch (error) {
       res
         .status(500)
