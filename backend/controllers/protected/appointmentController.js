@@ -76,6 +76,9 @@ export const createAppointment = async (req, res) => {
     });
 
     const appointment = await Appointment.create(newAppointment);
+    appointment.referenceNumber = appointment._id.toString().slice(-6).toUpperCase();
+
+    await appointment.save();
 
     //using Nodemailer to send email notification to patient; testing through Gmail + Mailgen
     sendAppointmentEmail({
@@ -83,7 +86,7 @@ export const createAppointment = async (req, res) => {
       patientEmail: appointment.patientEmail,
       startTime: appointment.startTime,
       status: appointment.status,
-      referenceNumber: appointment._id.toString().slice(-6).toUpperCase(), // last 6 digits of appointment ID
+      referenceNumber: appointment.referenceNumber, // last 6 digits of appointment ID
     }).catch((error) => {
       console.error("Error sending appointment email:", error);
     });

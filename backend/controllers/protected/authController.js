@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import { User } from "../models/userModel.js";
+import { User } from "../../models/userModel.js";
 
 export const login = async (req, res) => {
     console.log("Auth route passed")

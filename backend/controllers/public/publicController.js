@@ -1,8 +1,8 @@
-import { User } from "../models/userModel.js";
-import { Appointment } from "../models/appointmentModel.js";
-import { sendAppointmentEmail } from "../utils/emailService.js";
-import { Availability } from "../models/availabilityModel.js";
-import { generateAvailableSlots } from "../utils/generateAvailableSlots.js";
+import { User } from "../../models/userModel.js";
+import { Appointment } from "../../models/appointmentModel.js";
+import { sendAppointmentEmail } from "../../utils/emailService.js";
+import { Availability } from "../../models/availabilityModel.js";
+import { generateAvailableSlots } from "../../utils/generateAvailableSlots.js";
 
 export const createAppointment = async (req, res) => {
     try {
@@ -109,6 +109,7 @@ export const getAppointments = async (req, res) => {
 
 export const getAppointmentById = async (req, res) => {
   try {
+    //change logic to verify email address and reference number
     const { id } = req.params;
     const appointment = await Appointment.findById(id);
 
@@ -120,6 +121,24 @@ export const getAppointmentById = async (req, res) => {
   } catch (error) {
     res.status(500).send({ message: "Error fetching appointment", error });
   }
+};
+
+export const viewAppointmentByEmail = async (req, res) => {
+    try {
+        const { email, referenceNumber } = req.body;
+        const appointment = await Appointment.findOne({
+            patientEmail: email,
+            _id: referenceNumber
+        });
+
+        if (!appointment) {
+            return res.status(404).send({ message: "Appointment not found" });
+        }
+
+        res.status(200).send(appointment);
+    } catch (error) {
+        res.status(500).send({ message: "Error fetching appointment", error });
+    }
 };
 
 export const updateAppointmentById = async (req, res) => {
