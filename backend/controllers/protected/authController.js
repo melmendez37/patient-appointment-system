@@ -1,23 +1,14 @@
 import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
 import { User } from "../../models/userModel.js";
 
 export const login = async (req, res) => {
     console.log("Auth route passed")
   try {
-    //Authenticate login
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email: email });
-    if (!user) {
-      res.status(404).send({ message: "Account not found." });
-    }
+    const user = await User.login(email, password);
 
-    const isValid = await bcrypt.compare(password, user.password);
-    if (!isValid) {
-      res.status(401).send({ message: "Password does not match." });
-    }
-
+    //set up the facts for the token
     const payload = {
         id: user._id,
         role: user.role,
@@ -45,6 +36,6 @@ export const login = async (req, res) => {
         },
     });
   } catch (error) {
-    res.status(500).send({ message: "Error logging in", error });
+    res.status(500).send({ message: "Error logging in", error: error.message });
   }
 }

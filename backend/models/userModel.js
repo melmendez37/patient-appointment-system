@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
 
 const userSchema = new mongoose.Schema(
   {
@@ -13,6 +14,25 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+userSchema.statics.login = async function(email, password) {
+  if(!email || !password){
+    throw Error("All fields must be filled");
+  }
+
+  const user = await this.findOne({ email });
+  if(!user){
+    throw Error("Incorrect email");
+  }
+  
+  const isValid = await bcrypt.compare(password, user.password);
+
+  if (!isValid) {
+    throw Error("Incorrect password");
+  }
+
+  return user;
+}
 
 export const User = mongoose.model("User", userSchema);
 
