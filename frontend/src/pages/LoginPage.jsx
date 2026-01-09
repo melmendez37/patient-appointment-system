@@ -1,14 +1,16 @@
 import React from 'react'
 import { useState } from 'react'
+import { useLogin } from '../hooks/useLogin'
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const { login, isLoading, error } = useLogin();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         // Sign up logic here
-        console.log(email, password);
+        await login (email, password);
     }
 
   return (
@@ -33,7 +35,8 @@ const LoginPage = () => {
                     className='bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400'
                     placeholder='******'
                 />
-                <button className='bg-blue-500 text-white p-3 rounded hover:bg-blue-600 transition mt-8'>Sign Up</button>
+                <button disabled={isLoading} className='bg-blue-500 text-white p-3 rounded hover:bg-blue-600 transition mt-8'>Sign Up</button>
+                {error && <div className='text-red-500 font-semibold text-center'>{error}</div>}
             </form>
         </div>
     </div>

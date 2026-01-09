@@ -10,26 +10,33 @@ export const useLogin = () => {
         setIsLoading(true);
         setError(null);
 
-        const response = await fetch('/login', {
+        try {
+            const response = await fetch('http://localhost:5555/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
-        });
+            });
 
-        const json = await response.json();
+            console.log("Response:", response);
 
-        if (!response.ok) {
-            setIsLoading(false);
-            setError(json.error);
-        }
+            const json = await response.json();
 
-        if (response.ok) {
-            // save the user to local storage
-            localStorage.setItem('user', JSON.stringify(json));
-            
-            // update the auth context
-            dispatch({ type: 'LOGIN', payload: json }); 
+            if (!response.ok) {
+                setIsLoading(false);
+                setError(json.error);
+            }
 
+            if (response.ok) {
+                // save the user to local storage
+                localStorage.setItem('user', JSON.stringify(json));
+                
+                // update the auth context
+                dispatch({ type: 'LOGIN', payload: json }); 
+
+                setIsLoading(false);
+            }
+        } catch (error) {
+            setError('Network error. Please try again later.');
             setIsLoading(false);
         }
     }
