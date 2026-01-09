@@ -15,10 +15,14 @@ export const createAppointment = async (req, res) => {
         return res.status(400).send({ message: "Doctor ID invalid" });
       }
 
-      if (req.user.doctor.toString() !== req.body.doctor) {
-        return res.status(403).send({
-          message: "You can only create appointment for your assigned doctor",
-        });
+      //appointment should be created 24 or more hours in advance
+      const now = new Date();
+      const diffInMs = new Date(req.body.startTime) - now;
+      const diffInHours = diffInMs / (1000 * 60 * 60);
+      if (diffInHours < 24) {
+        return res
+          .status(400)
+          .send({ message: "Appointments must be booked at least 24 hours in advance" });
       }
 
       const targetDate = new Date(req.body.startTime);
@@ -76,6 +80,9 @@ export const createAppointment = async (req, res) => {
       });
 
       const appointment = await Appointment.create(newAppointment);
+      appointment.referenceNumber = appointment._id.toString().slice(-6).toUpperCase();
+
+      await appointment.save();
 
       //using Nodemailer to send email notification to patient; testing through Gmail + Mailgen
       sendAppointmentEmail({
@@ -90,6 +97,7 @@ export const createAppointment = async (req, res) => {
 
       res.status(201).send(appointment);
     } catch (error) {
+      console.log(error)
       res.status(500).send({ message: "Error creating user", error });
     }
   };
@@ -125,10 +133,10 @@ export const getAppointmentById = async (req, res) => {
 
 export const viewAppointmentByEmail = async (req, res) => {
     try {
-        const { email, referenceNumber } = req.body;
+        const { email, ref } = req.query;
         const appointment = await Appointment.findOne({
             patientEmail: email,
-            _id: referenceNumber
+            referenceNumber: ref.toUpperCase(),
         });
 
         if (!appointment) {

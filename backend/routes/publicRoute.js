@@ -1,6 +1,6 @@
 import express from "express";
 import { validateFields } from "../middleware/validateFields.js";
-import { createAppointment, getAppointmentById, getAppointments, updateAppointmentById } from "../controllers/public/publicController.js";
+import { createAppointment, getAppointmentById, getAppointments, updateAppointmentById, viewAppointmentByEmail } from "../controllers/public/publicController.js";
 
 const router = express.Router();
 
@@ -21,7 +21,7 @@ router.post(
 router.get("/", getAppointments);
 
 //Fetch appointment by verifying email address and reference
-router.get("/:id", getAppointmentById);
+router.get("/lookup", viewAppointmentByEmail);
 
 //Update appointment by ID
 router.put("/:id", updateAppointmentById);
