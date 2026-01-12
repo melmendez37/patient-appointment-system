@@ -7,10 +7,7 @@ const HomePage = () => {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <div className="flex min-h-screen gap-6">
-        <div className="w-64 bg-gray-800 text-white p-4">
-          <Sidebar />
-        </div>
-
+        <Sidebar />
         <ViewAppointments />
       </div>
     </div>
