@@ -106,7 +106,7 @@ export const getAllAppointments = async (req, res) => {
     } else if (req.user.role === "staff") {
       filter.doctor = req.user.doctor;
     }
-    const appointments = await Appointment.find(filter);
+    const appointments = await Appointment.find(filter).populate("doctor", "name");
 
     return res.status(200).json({
       role: req.user.role,
