@@ -10,7 +10,7 @@ const Sidebar = () => {
         <nav className="flex flex-col gap-4">
             <Link to="/dashboard/appointments" className='px-4 py-2 rounded hover:bg-gray-700 transition'>Appointments</Link>
             <Link to="/dashboard/schedules" className='px-4 py-2 rounded hover:bg-gray-700 transition'>Availability</Link>
-            <Link to="/dashboard/user" className='px-4 py-2 rounded hover:bg-gray-700 transition'>Profile</Link>
+            <Link to="/dashboard/profile" className='px-4 py-2 rounded hover:bg-gray-700 transition'>Profile</Link>
             {user?.user.role === "admin" && (
                 <Link className='px-4 py-2 rounded hover:bg-gray-700 transition'>Users</Link>
             )}
