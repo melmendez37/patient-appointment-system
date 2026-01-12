@@ -1,0 +1,24 @@
+import React from 'react'
+import { Link } from 'react-router-dom'
+import { useAuthContext } from '../hooks/useAuthContext'
+const Sidebar = () => {
+    const {user} = useAuthContext();
+
+  return (
+   <div className="h-screen w-64 text-white flex flex-col p-6">
+        <h1 className="text-2xl font-bold mb-8">Welcome</h1>
+
+        <nav className="flex flex-col gap-4">
+            <Link className='px-4 py-2 rounded hover:bg-gray-700 transition'>Appointments</Link>
+            <Link className='px-4 py-2 rounded hover:bg-gray-700 transition'>Availability</Link>
+            <Link className='px-4 py-2 rounded hover:bg-gray-700 transition'>Profile</Link>
+            {user?.user.role === "admin" && (
+                <Link className='px-4 py-2 rounded hover:bg-gray-700 transition'>Users</Link>
+            )}
+
+        </nav>
+   </div>
+  )
+}
+
+export default Sidebar
