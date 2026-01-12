@@ -30,16 +30,27 @@ const ViewAppointments = () => {
 
   return (
     <div className="flex-1 p-6 bg-white">
-      {appointments.length === 0 && (
+      <div className="grid grid-cols-5 gap-2 mb-6 text-sm items-center font-semibold text-gray-500">
+        <div>Patient</div>
+        <div>Doctor</div>
+        <div>Date & Time</div>
+        <div>Status</div>
+        <div>Actions</div>
+      </div>
+
+      {appointments.length === 0 ? (
         <p className="text-center mt-4">No appointments found.</p>
-      )}
-      {appointments.map((appointment) => (
-        <div key={appointment._id} className="flex justify-around gap-8 mb-8">
-          <div className="flex-1 font-semibold text-gray-900">
+      ) : (
+        appointments.map((appointment) => (
+        <div key={appointment._id} className="grid grid-cols-5 items-center gap-2 mb-8">
+          <div className="font-semibold text-gray-900">
             {appointment.patientName}
           </div>
-          <div className="w-40 flex flex-col">
-            <span className="text-sm font-medium text-gray-900">
+          <div className="font-semibold text-gray-900">
+            {appointment.doctor?.name ?? "-"}
+          </div>
+          <div className="w-40">
+            <span className="block text-sm font-medium text-gray-900">
               {new Date(appointment.startTime).toLocaleDateString(undefined, {
                 year: "numeric",
                 month: "short",
@@ -73,7 +84,7 @@ const ViewAppointments = () => {
           </div>
 
           {user?.user?.role === "staff" && (
-            <div className="flex gap-8 ml-6">
+            <div className="flex gap-8">
               <button className="text-blue-600 hover:text-blue-800 font-medium">
                 Edit
               </button>
@@ -91,7 +102,10 @@ const ViewAppointments = () => {
             </div>
           )}
         </div>
-      ))}
+      ))
+      )}
+      
+      {}
     </div>
   );
 };
