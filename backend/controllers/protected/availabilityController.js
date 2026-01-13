@@ -48,7 +48,7 @@ export const getAvailabilities = async (req, res) => {
       filter.doctor = req.user.doctor;
     }
 
-    const availabilities = await Availability.find(filter);
+    const availabilities = await Availability.find(filter).populate("doctor", "name");
 
     return res.status(200).json({
       count: availabilities.length,
