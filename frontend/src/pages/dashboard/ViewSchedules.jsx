@@ -32,6 +32,7 @@ const ViewSchedules = () => {
 
   return (
     <div className="flex-1 p-6 bg-white">
+      <h1 className="text-2xl font-bold mb-6 text-gray-900">Schedules</h1>
       {availabilities.length === 0 && (
         <p className="text-center mt-4">No appointments found.</p>
       )}
