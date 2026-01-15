@@ -1,7 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useAppointmentsContext } from "../../hooks/useAppointmentsContext";
 import { useAuthContext } from "../../hooks/useAuthContext";
 import AppointmentRow from "../../components/appointments/AppointmentRow";
+import AppointmentForm from "../../components/appointments/AppointmentForm";
+import Modal from "../../components/Modal";
 
 const ViewAppointments = () => {
   const { appointments, dispatch } = useAppointmentsContext();
@@ -12,8 +14,10 @@ const ViewAppointments = () => {
   const canManageAppointments = role === "staff" || role === "doctor";
   const isDoctor = role === "doctor";
 
-  useEffect(() => {
-    const fetchAppointments = async () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingAppointment, setEditingAppointment] = useState(null);
+
+  const fetchAppointments = async () => {
       const response = await fetch("http://localhost:5555/appointments", {
         headers: {
           Authorization: `Bearer ${user.token}`,
@@ -24,12 +28,11 @@ const ViewAppointments = () => {
       if (response.ok) {
         dispatch({ type: "SET_APPOINTMENTS", payload: json.data });
       }
-    };
+  };
 
-    if (user) {
-      fetchAppointments();
-    }
-  }, [dispatch, user]);
+  useEffect(() => {
+    fetchAppointments();
+  }, [user]);
 
   console.log("user:", user);
   console.log("appointments:", appointments);
@@ -40,10 +43,16 @@ const ViewAppointments = () => {
         <h1 className="text-2xl font-bold mb-6 text-gray-900">Appointments</h1>
         <button
           className="px-4 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition"
+          onClick={() => {
+            setEditingAppointment(null);
+            setIsModalOpen(true);
+            
+          }}
         >
           Add Appointment
         </button>
       </div>
+
       <div className="grid grid-cols-5 gap-2 mb-6 text-sm items-center font-semibold text-gray-500">
         <div>Patient</div>
         <div>Doctor</div>
@@ -64,6 +73,16 @@ const ViewAppointments = () => {
             isDoctor={isDoctor}
           />
         ))
+      )}
+
+      {isModalOpen && (
+        <Modal onClose={() => setIsModalOpen(false)}>
+          <AppointmentForm
+            appointment={editingAppointment} // null for POST
+            onClose={() => setIsModalOpen(false)}
+            onSuccess={fetchAppointments}
+          />
+        </Modal>
       )}
     </div>
   );
