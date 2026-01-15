@@ -1,4 +1,5 @@
 import { createContext, useReducer, useEffect } from "react";
+import { isTokenValid } from "../utils/Auth";
 
 export const AuthContext = createContext();
 
@@ -19,7 +20,13 @@ export const AuthContextProvider = ({children}) => {
     });
 
     useEffect(() => {
-        const user = JSON.parse(localStorage.getItem('user'))
+        const user = JSON.parse(localStorage.getItem('user'));
+        const token = localStorage.getItem('token');
+
+        if(!token || !isTokenValid(token)){
+            dispatch({type: 'LOGOUT',})
+            return;
+        }
 
         if(user){
             dispatch({type: 'LOGIN', payload: user })
