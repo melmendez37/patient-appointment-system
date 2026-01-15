@@ -33,7 +33,7 @@ const AvailabilityRow = ({availabilities, canManage}) => {
         {formatDays(availabilities.dayOfWeek)}
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex justify-between items-center gap-4">
         <span
           className={`px-3 py-1 rounded-full text-sm font-semibold
             ${
@@ -47,7 +47,9 @@ const AvailabilityRow = ({availabilities, canManage}) => {
         </span>
 
         {canManage && (
-          <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+          <button
+            className="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
+          >
             Edit
           </button>
         )}

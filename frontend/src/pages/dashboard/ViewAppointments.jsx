@@ -36,7 +36,14 @@ const ViewAppointments = () => {
 
   return (
     <div className="flex-1 p-6 bg-white">
-      <h1 className="text-2xl font-bold mb-6 text-gray-900">Appointments</h1>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-2xl font-bold mb-6 text-gray-900">Appointments</h1>
+        <button
+          className="px-4 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition"
+        >
+          Add Appointment
+        </button>
+      </div>
       <div className="grid grid-cols-5 gap-2 mb-6 text-sm items-center font-semibold text-gray-500">
         <div>Patient</div>
         <div>Doctor</div>
