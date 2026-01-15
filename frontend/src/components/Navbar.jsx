@@ -14,13 +14,14 @@ const Navbar = () => {
     <header>
         <div className="container flex justify-between items-center max-w-full bg-gray-100 text-black p-4">
             <Link to="/">
-                <h1>Medqueue</h1>
+                <h1 className='text-2xl uppercase font-bold'>Medqueue</h1>
                 </Link>
             <nav>
                 <div className="flex gap-4 items-center ">
                     {user && (
-                        <div>
-                            <span>{user.user.email}</span>
+                        <div className='flex justify-between gap-8'>
+                            <Link to="/dashboard/profile">{user.user.email}</Link>
+                            <Link to="/dashboard">Dashboard</Link>
                             <button onClick={handleClick}>Log out</button>
                         </div>
                     )}
