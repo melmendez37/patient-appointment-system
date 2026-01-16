@@ -52,6 +52,34 @@ export const getAllUsers = async (req, res) => {
   }
 };
 
+export const getDoctors = async (req, res) => {
+  try {
+    const user = req.user;
+    console.log(user);
+    let doctors;
+
+    if(user.role === "admin"){
+      doctors = await User.find({ role: "doctor"}).select("_id name");
+    }
+
+    if(user.role === "staff"){
+      doctors = await User.find({
+        _id: { $in: [user.doctor] },
+      }).select("_id name")
+    }
+
+    if(user.role === "doctor"){
+      doctors = await User.find({ _id: user._id }).select("_id name");
+    }
+
+    res.status(200).send(doctors);
+  } catch (error) {
+    res.status(500).send({ message: "Error fetching doctors", error });
+  }
+
+
+}
+
 export const getUserById = async (req, res) => {
   try {
     const { id } = req.params;
