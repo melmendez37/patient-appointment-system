@@ -1,23 +1,33 @@
+import mongoose from "mongoose";
 import { User } from "../../models/userModel.js";
 import bcrypt from "bcrypt";
 
 export const addNewUser = async (req, res) => {
   try {
-    const doctorAllowedRoles = ["staff"];
+    if(req.user.role !== "admin"){
+      res.status(403).send({ message: "Admins only" });
+    }
 
-    if (req.body.doctor) {
-      if (!doctorAllowedRoles.includes(req.body.role)) {
-        return res
-          .status(400)
-          .send({ message: `${req.body.role} cannot have a doctor assigned` });
+    if(req.body.doctors !== undefined){
+      if(role !== "staff"){
+        res.status(400).json({ message: "Only staff can have assigned doctors"})
       }
 
-      const docExists = await User.findOne({
-        _id: req.body.doctor,
+      if(!Array.isArray(doctors)){
+        return res.status(400).json({
+          message: "Doctors must be an array",
+        });
+      }
+
+      const foundDoctors = await User.find({
+        _id: { $in: doctors },
         role: "doctor",
-      });
-      if (!docExists) {
-        res.status(400).send({ message: "Doctor not found or invalid role" });
+      })
+
+      if (foundDoctors.length !== doctors.length) {
+        return res.status(400).json({
+          message: "One or more doctor IDs are invalid",
+        });
       }
     }
 
@@ -29,7 +39,7 @@ export const addNewUser = async (req, res) => {
       phone: req.body.phone,
       password: hashedPassword,
       role: req.body.role,
-      doctor: req.body.doctor || null,
+      doctors: role === "staff" ? req.body.doctors || [] : [],
     });
 
     const user = await User.create(newUser);
@@ -101,15 +111,15 @@ export const getUserById = async (req, res) => {
 
 export const updateUserById = async (req, res) => {
   try {
-    if (req.body.password) {
-      const hashedPassword = await bcrypt.hash(req.body.password, 10);
-      req.body.password = hashedPassword;
-    }
-
     const { id } = req.params;
     const { role, id: userId } = req.user;
 
     let updateData = {};
+
+    if (req.body.password) {
+      const hashedPassword = await bcrypt.hash(req.body.password, 10);
+      req.body.password = hashedPassword;
+    }
 
     if (role === "admin") {
       const allowedUpdates = [
@@ -117,50 +127,51 @@ export const updateUserById = async (req, res) => {
         "email",
         "phone",
         "role",
-        "doctor",
+        "doctors",
         "isActive",
         "deletedAt",
       ];
 
       allowedUpdates.forEach((field) => {
-        if (req.body[field] !== undefined) {
+        if (Object.prototype.hasOwnProperty.call(req.body, field)) {
           updateData[field] = req.body[field];
         }
       });
-      console.log("passed by admin");
-    } else {
-      //non-admin
-      if (id !== userId) {
-        return res.status(403).json({ message: "Cannot edit other users" });
-      }
 
-      const allowedUpdates = ["name", "email", "phone", "password"];
-      const forbiddenUpdates = ["role", "isActive", "doctor", "deletedAt"];
-
-      const attemptedForbiddenUpdates = forbiddenUpdates.filter(
-        (f) => f in req.body
-      );
-
-      if (attemptedForbiddenUpdates.length > 0) {
-        return res.status(403).json({
-          message: `Cannot update fields: ${attemptedForbiddenUpdates.join(
-            ", "
-          )}`,
-        });
-      }
-
-      allowedUpdates.forEach((field) => {
-        if (req.body[field] !== undefined) {
-          updateData[field] = req.body[field];
+      if(Object.prototype.hasOwnProperty.call(updateData, "doctors")){
+        if(!Array.isArray(updateData.doctors)){
+          return res
+            .status(400)
+            .json({ message: "Doctors must be an array of IDs" });
         }
-      });
-      console.log(updateData);
-    }
 
-    if (role !== "admin") {
-      ["role", "isActive", "doctor", "deletedAt"].forEach((field) => {
-        if (field in updateData) delete updateData[field];
-      });
+        const invalidIds = updateData.doctors.filter(
+          (id) => !mongoose.Types.ObjectId.isValid(id)
+        );
+
+        if(invalidIds.length > 0){
+          return res.status(400).json({
+            message: "Invalid doctor ObjectId format",
+            invalidIds,
+          });
+        }
+
+        const doctorsFound = await User.find({
+          _id: { $in: updateData.doctors },
+          role: "doctor",
+        }).select("_id");
+
+        if (doctorsFound.length !== updateData.doctors.length) {
+          return res.status(400).json({
+            message: "One or more users are not doctors",
+          });
+        }
+
+        // cast ONCE
+        updateData.doctors = updateData.doctors.map(
+          (id) => new mongoose.Types.ObjectId(id)
+        );
+      }
     }
 
     const updatedUser = await User.findByIdAndUpdate(id, updateData, {
@@ -173,7 +184,7 @@ export const updateUserById = async (req, res) => {
 
     return res
       .status(200)
-      .send({ message: "User updated successfully" + updatedUser });
+      .send({ message: "User updated successfully", user: updatedUser });
   } catch (error) {
     res.status(500).send({ message: "Error updating user", error });
   }
