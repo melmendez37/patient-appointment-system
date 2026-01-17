@@ -15,10 +15,13 @@ export const createAppointment = async (req, res) => {
       return res.status(400).send({ message: "Doctor ID invalid" });
     }
 
-    if (req.user.doctor.toString() !== req.body.doctor) {
-      return res.status(403).send({
-        message: "You can only create appointment for your assigned doctor",
+    if(req.user.role === "staff"){
+      const assignedDoctors = req.user.doctors.map((id) => id.toString());
+      if(!assignedDoctors.includes(req.body.doctor)){
+        return res.status(403).send({
+        message: "You can only create appointments for your assigned doctors",
       });
+      }
     }
 
     const targetDate = new Date(req.body.startTime);
