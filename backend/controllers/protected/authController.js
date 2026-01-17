@@ -16,7 +16,7 @@ export const login = async (req, res) => {
     };
 
     if(user.role === "staff"){
-        payload.doctor = user.doctor;
+        payload.doctors = user.doctors;
     }
 
     const token = jwt.sign(
