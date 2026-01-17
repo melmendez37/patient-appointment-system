@@ -5,6 +5,7 @@ import DashboardLayout from './pages/dashboard/DashboardLayout.jsx'
 import ViewAppointments from './pages/dashboard/ViewAppointments.jsx'
 import ViewSchedules from './pages/dashboard/ViewSchedules.jsx'
 import ViewProfile from './pages/dashboard/ViewProfile.jsx'
+import "react-datepicker/dist/react-datepicker.css";
 
 const App = () => {
   return (
