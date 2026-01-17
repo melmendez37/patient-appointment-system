@@ -33,7 +33,7 @@ router.get(
   authorizeRoles("admin", "staff", "doctor"),
   getAvailabilityById
 );
-
+// /schedules/:doctorId/available-slots?date=YYYY-MM-DD
 router.get(
   "/:doctorId/available-slots",
   authMiddleware,

@@ -1,5 +1,7 @@
 import { User } from "../../models/userModel.js";
 import { Availability } from "../../models/availabilityModel.js";
+import { Appointment } from "../../models/appointmentModel.js";
+import { generateAvailableSlots } from "../../utils/generateAvailableSlots.js";
 
 export const addAvailability = async (req, res) => {
   try {
@@ -45,7 +47,7 @@ export const getAvailabilities = async (req, res) => {
     if (req.user.role === "doctor") {
       filter.doctor = req.user.id;
     } else if (req.user.role === "staff") {
-      filter.doctor = req.user.doctor;
+      filter.doctor = req.user.doctors;
     }
 
     const availabilities = await Availability.find(filter).populate("doctor", "name");
@@ -86,15 +88,17 @@ export const getAvailableSlots = async (req, res) => {
     const { doctorId } = req.params;
     const { date } = req.query;
 
+    const allowedDoctorsId = req.user.doctors.map(String);
+
     if (!date) {
       return res.status(400).send({ message: "Date is required" });
     }
 
-    if (req.user.role === "doctor" && req.user.id !== doctorId) {
+    if (req.user.role === "doctor" && req.user.id.toString() !== doctorId) {
       return res.status(403).send({ message: "Access denied" });
     }
 
-    if (req.user.role === "staff" && req.user.doctor !== doctorId) {
+    if (req.user.role === "staff" && !allowedDoctorsId.includes(doctorId)) {
       return res.status(403).send({ message: "Access denied" });
     }
 
@@ -152,7 +156,8 @@ export const getAvailableSlots = async (req, res) => {
 
     res.status(200).json(availableSlots);
   } catch (error) {
-    res.status(500).send({ message: "Error fetching available slots", error });
+    res.status(500).json({ message: "Error fetching available slots", error:error });
+    console.log(error)
   }
 };
 
