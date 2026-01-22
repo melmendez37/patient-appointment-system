@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
+import { useAuthContext } from "../../hooks/useAuthContext";
 
 const AppointmentForm = ({ appointment = null, onClose, onSuccess }) => {
+  const {user} = useAuthContext();
   const isEdit = Boolean(appointment);
   const [isWalkIn, setIsWalkIn] = useState(false);
 
@@ -61,6 +63,30 @@ const AppointmentForm = ({ appointment = null, onClose, onSuccess }) => {
 
     fetchAvailableTimes();
   }, [selectedDate, selectedDoctor])
+
+  useEffect(() => {
+    if (!user) return;
+    const fetchDoctors = async () => {
+      try {
+        const res = await fetch("http://localhost:5555/users/doctors", {
+          headers: {
+            Authorization: `Bearer ${user.token}`
+          }
+        });
+        const json = await res.json();
+        
+        if(res.ok){
+          setDoctors(json);
+        } else {
+          console.error("Error fetching doctors:", json.message);
+        }
+      } catch (error) {
+        console.error("server error.")
+      }
+    };
+
+    fetchDoctors();
+  }, [])
 
   const handleChange = (e) => {
     setFormData((prev) => ({

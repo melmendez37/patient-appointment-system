@@ -24,17 +24,17 @@ router.post(
 router.get("/", authMiddleware, authorizeRoles("admin"), getAllUsers);
 
 router.get(
-  "/:id",
-  authMiddleware,
-  authorizeRoles("admin", "staff", "doctor"),
-  getUserById
-);
-
-router.get(
   "/doctors",
   authMiddleware,
   authorizeRoles("admin", "staff", "doctor"),
   getDoctors
+);
+
+router.get(
+  "/:id",
+  authMiddleware,
+  authorizeRoles("admin", "staff", "doctor"),
+  getUserById
 );
 
 router.put(

@@ -74,7 +74,7 @@ export const getDoctors = async (req, res) => {
 
     if(user.role === "staff"){
       doctors = await User.find({
-        _id: { $in: [user.doctor] },
+        _id: { $in: user.doctors },
       }).select("_id name")
     }
 
