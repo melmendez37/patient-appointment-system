@@ -83,6 +83,49 @@ export const getAvailabilityById = async (req, res) => {
   }
 };
 
+export const getAvailableDays = async (req, res) => {
+  try {
+    const { doctorId } = req.params;
+
+    const allowedDoctorsId = req.user.doctors.map(String);
+
+    if (req.user.role === "doctor" && req.user.id.toString() !== doctorId) {
+      return res.status(403).send({ message: "Access denied" });
+    }
+
+    if (req.user.role === "staff" && !allowedDoctorsId.includes(doctorId)) {
+      return res.status(403).send({ message: "Access denied" });
+    }
+
+    const LOOKAHEAD_DAYS = 14;
+    const today = new Date();
+    const availableDays = [];
+
+    for(let i = 0; i < LOOKAHEAD_DAYS; i++){
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+
+      const dayOfWeek = date.getDay();
+
+      //get availability for that day
+      const availability = await Availability.findOne({
+        doctor: doctorId,
+        dayOfWeek: dayOfWeek,
+        isAvailable: true,
+      });
+
+      if (availability) {
+        availableDays.push(date.toISOString().split("T")[0])
+      }
+    }
+
+    return res.status(200).json({availableDays});
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching available days", error:error });
+    console.log(error)
+  }
+};
+
 export const getAvailableSlots = async (req, res) => {
   try {
     const { doctorId } = req.params;

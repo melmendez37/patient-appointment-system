@@ -10,7 +10,7 @@ const AppointmentForm = ({ appointment = null, onClose, onSuccess }) => {
   const [doctors, setDoctors] = useState([]);
   const [doctorId, setDoctorId] = useState("")
 
-  const [selectedDoctor, setSelectedDoctor] = useState("");
+  const [availableDays, setAvailableDays] = useState([]);
   const [selectedDate, setSelectedDate] = useState("");
   const [availableSlots, setAvailableSlots] = useState([]);
   const [selectedTime, setSelectedTime] = useState("");
@@ -28,6 +28,7 @@ const AppointmentForm = ({ appointment = null, onClose, onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  //form data
   useEffect(() => {
     if (appointment) {
       const start = new Date(appointment.startTime);
@@ -44,12 +45,13 @@ const AppointmentForm = ({ appointment = null, onClose, onSuccess }) => {
     }
   }, [appointment]);
 
+  //fetching available timeslots
   useEffect(() => {
     if(!selectedDate || !selectedTime) return;
 
     const fetchAvailableTimes = async () => {
       const res = await fetch(
-        `http://localhost:5555/${selectedDoctor}/available-slots?date=${selectedDate}`,
+        `http://localhost:5555/${doctorId}/available-slots?date=${selectedDate}`,
         {
           headers: {Authorization: `Bearer ${user.token}`},
         }
@@ -62,8 +64,9 @@ const AppointmentForm = ({ appointment = null, onClose, onSuccess }) => {
     };
 
     fetchAvailableTimes();
-  }, [selectedDate, selectedDoctor])
+  }, [selectedDate, doctorId])
 
+  //fetching doctors
   useEffect(() => {
     if (!user) return;
     const fetchDoctors = async () => {
@@ -74,7 +77,7 @@ const AppointmentForm = ({ appointment = null, onClose, onSuccess }) => {
           }
         });
         const json = await res.json();
-        
+
         if(res.ok){
           setDoctors(json);
         } else {
@@ -87,6 +90,32 @@ const AppointmentForm = ({ appointment = null, onClose, onSuccess }) => {
 
     fetchDoctors();
   }, [])
+
+  //fetching available days
+  useEffect(() => {
+    if(!doctorId) return;
+
+    const fetchAvailableDays = async () => {
+      const res = await fetch(
+        `http://localhost:5555/schedules/${doctorId}/available-days`,
+        {
+          headers: {
+            Authorization: `Bearer ${user.token}`
+          }
+        }
+      );
+
+      const json = await res.json();
+
+      if (res.ok) {
+        console.log(json)
+        setAvailableDays(json);
+        setSelectedDate(null); // reset previously picked date
+      }
+    };
+
+    fetchAvailableDays();
+  }, [doctorId, user.token])
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -214,16 +243,23 @@ const AppointmentForm = ({ appointment = null, onClose, onSuccess }) => {
                 </select>
             </div>
 
-        {/* Start Time Dropdown */}
+        {/* Date Dropdown */}
         <div>
           <label className="block text-sm font-medium mb-1">Date</label>
-          <DatePicker
-            selected={selectedDate ? new Date(selectedDate) : null}
-            onChange={(date) => setSelectedDate(date)}
-            filterDate={(date) => availableSlots.includes(date.toISOString().split("T")[0])}
-            dateFormat="yyyy-MM-dd"
-            className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+          <select
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+            className="w-full border rounded-lg px-3 py-2 text-sm"
+            required
+            disabled={!doctorId}
+          >
+            <option value="">{!doctorId ? "Select a doctor first" : "Select a date"}</option>
+            {Array.isArray(availableDays) && availableDays.map((day) => (
+              <option key={day} value={day}>
+                {day}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div>
@@ -232,9 +268,10 @@ const AppointmentForm = ({ appointment = null, onClose, onSuccess }) => {
             value={selectedTime}
             onChange={(e) => setSelectedTime(e.target.value)}
             required
+            disabled={!doctorId || !selectedDate}
             className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value="">Select a time</option>
+            <option value="">{(!doctorId || !selectedDate) ? "Select a doctor and date first" : "Select a time"}</option>
             {availableSlots.map((slot) => (
               <option key={slot} value={slot}>
                 {new Date(slot).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: true })}
