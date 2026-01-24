@@ -1,6 +1,6 @@
 import React from 'react'
 
-const AvailabilityRow = ({availabilities, canManage}) => {
+const AvailabilityRow = ({availabilities, canManage, onEdit}) => {
     const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
     const formatDays = (days = []) =>
@@ -49,6 +49,7 @@ const AvailabilityRow = ({availabilities, canManage}) => {
         {canManage && (
           <button
             className="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
+            onClick={() => onEdit(availabilities)}
           >
             Edit
           </button>
