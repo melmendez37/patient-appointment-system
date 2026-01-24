@@ -30,7 +30,20 @@ const AppointmentForm = ({ appointment = null, onClose, onSuccess }) => {
   //form data
   useEffect(() => {
     if (appointment) {
+      console.log(appointment)
       const start = new Date(appointment.startTime);
+
+      const date = [
+        start.getFullYear(),
+        String(start.getMonth() + 1).padStart(2, "0"),
+        String(start.getDate()).padStart(2, "0"),
+      ].join("-")
+
+      const time = appointment.startTime.split("T")[1].split("Z")[0].slice(0, 5);
+
+      setSelectedDate(date);
+      setSelectedTime(time);
+      setDoctorId(appointment.doctor?._id)
 
       setFormData({
         patientName: appointment.patientName,
