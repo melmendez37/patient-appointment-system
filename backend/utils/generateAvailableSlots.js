@@ -35,7 +35,8 @@ export const generateAvailableSlots = (
     current.setMinutes(current.getMinutes() + 30); // Assuming 30-minute slots
   }
 
-  const bookedSlots = bookedAppointments.map((app) => app.startTime.getTime());
+  const bookedSlots = bookedAppointments
+  .filter(app => app._id !== appointment.id).map((app) => app.startTime.getTime());
 
   //filter out booked slots
   return slots.filter((slot) => !bookedSlots.includes(slot.getTime()));
