@@ -30,6 +30,11 @@ const ViewAppointments = () => {
       }
   };
 
+  const handleEdit = (appointment) => {
+    setEditingAppointment(appointment); 
+    setIsModalOpen(true);
+  };
+
   useEffect(() => {
     fetchAppointments();
   }, [user]);
@@ -71,6 +76,7 @@ const ViewAppointments = () => {
             canSeeDoctor={canSeeDoctor}
             canManageAppointments={canManageAppointments}
             isDoctor={isDoctor}
+            onEdit={handleEdit}
           />
         ))
       )}

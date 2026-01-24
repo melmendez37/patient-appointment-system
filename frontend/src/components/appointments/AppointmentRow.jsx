@@ -5,6 +5,7 @@ const AppointmentRow = ({
   canSeeDoctor,
   canManageAppointments,
   isDoctor,
+  onEdit
 }) => {
   return (
     <div
@@ -54,7 +55,10 @@ const AppointmentRow = ({
 
       {canManageAppointments && (
         <div className="flex gap-8">
-          <button className="text-blue-600 hover:text-blue-800 font-medium">
+          <button 
+            className="text-blue-600 hover:text-blue-800 font-medium"
+            onClick={() => onEdit(appointment)}
+            >
             Edit
           </button>
           <button className="text-red-600 hover:text-red-800 font-medium">
