@@ -132,16 +132,29 @@ const AppointmentForm = ({ appointment = null, onClose, onSuccess }) => {
     setLoading(true);
     setError(false);
 
+    // if selectedTime is like "2026-02-02T11:30:00.000Z"
+    const timePart = new Date(selectedTime)
+      .toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false }); // "11:30"
+
+    // now you can split into hours and minutes
+    const [hours, minutes] = timePart.split(":").map(Number);
+
+    // combine with selectedDate
+    const [year, month, day] = selectedDate.split("-").map(Number);
+    const startTime = new Date(year, month - 1, day, hours, minutes).toISOString();
+    
     try {
       const payload = {
         patientName: formData.patientName,
         patientEmail: formData.patientEmail,
         patientPhone: formData.patientPhone,
-        doctor: formData.doctor,
-        startTime: formData.startTime,
-        status: formData.status,
-        isWalkIn: formData.isWalkIn,
+        doctor: doctorId,
+        startTime: startTime,
+        status: formData.status || "scheduled",
+        isWalkIn: formData.isWalkIn || false,
       };
+
+      console.log(payload);
 
       const token = localStorage.getItem("token");
 
@@ -318,6 +331,17 @@ const AppointmentForm = ({ appointment = null, onClose, onSuccess }) => {
             />
             Walk-in appointment?
           </label>
+        </div>
+
+        <div className="mt-4">
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={!formData.patientName || !formData.patientEmail || !formData.patientPhone || !doctorId || !selectedDate || !selectedTime}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+          >
+            Book Appointment
+          </button>
         </div>
       </form>
     </div>
