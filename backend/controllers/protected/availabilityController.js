@@ -87,7 +87,7 @@ export const getAvailableDays = async (req, res) => {
   try {
     const { doctorId } = req.params;
 
-    const allowedDoctorsId = req.user.doctors.map(String);
+    const allowedDoctorsId = req.user.doctors?.map(String);
 
     if (req.user.role === "doctor" && req.user.id.toString() !== doctorId) {
       return res.status(403).send({ message: "Access denied" });
@@ -103,6 +103,11 @@ export const getAvailableDays = async (req, res) => {
 
     for(let i = 0; i < LOOKAHEAD_DAYS; i++){
       const date = new Date(today);
+      console.log({
+        local: date.toString(),
+        iso: date.toISOString(),
+        dayOfWeek: date.getDay()
+      });
       date.setDate(today.getDate() + i);
 
       const dayOfWeek = date.getDay();
@@ -114,8 +119,33 @@ export const getAvailableDays = async (req, res) => {
         isAvailable: true,
       });
 
-      if (availability) {
-        availableDays.push(date.toISOString().split("T")[0])
+      if (!availability || !availability.startTime || !availability.endTime) continue;
+
+      const startOfDay = new Date(date);
+      startOfDay.setUTCHours(0, 0, 0, 0);
+
+      const endOfDay = new Date(date);
+      endOfDay.setUTCHours(23, 59, 59, 999);
+
+      const bookedAppointments = await Appointment.find({
+        doctor: doctorId,
+        startTime: { $gte: startOfDay, $lte: endOfDay },
+        status: "scheduled",
+      });
+
+      const slots = generateAvailableSlots(
+        date,
+        availability.startTime,
+        availability.endTime,
+        bookedAppointments
+      );
+
+      if (slots.length > 0) {
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, "0");
+        const dd = String(date.getDate()).padStart(2, "0")
+
+        availableDays.push(`${yyyy}-${mm}-${dd}`)
       }
     }
 
@@ -145,7 +175,15 @@ export const getAvailableSlots = async (req, res) => {
       return res.status(403).send({ message: "Access denied" });
     }
 
-    const targetDate = new Date(date);
+    const [year, month, day] = date.split("-").map(Number);
+
+    const targetDate = new Date(
+      year,
+      month - 1,
+      day,     // local midnight
+      0, 0, 0
+    );
+
     const dayOfWeek = targetDate.getDay();
 
     //get availability for that day
@@ -161,27 +199,8 @@ export const getAvailableSlots = async (req, res) => {
         .send({ message: "No available slots for this date" });
     }
 
-    const startOfDay = new Date(
-      Date.UTC(
-        targetDate.getFullYear(),
-        targetDate.getMonth(),
-        targetDate.getDate(),
-        0,
-        0,
-        0
-      )
-    );
-    const endOfDay = new Date(
-      Date.UTC(
-        targetDate.getFullYear(),
-        targetDate.getMonth(),
-        targetDate.getDate(),
-        23,
-        59,
-        59,
-        999
-      )
-    );
+    const startOfDay = new Date(year, month - 1, day, 0, 0, 0);
+    const endOfDay   = new Date(year, month - 1, day, 23, 59, 59, 999); 
 
     //get booked appointments for that day
     const bookedAppointments = await Appointment.find({

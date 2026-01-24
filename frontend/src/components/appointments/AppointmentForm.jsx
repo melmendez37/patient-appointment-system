@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import DatePicker from "react-datepicker";
+import { useEffect, useState } from "react";
 import { useAuthContext } from "../../hooks/useAuthContext";
 
 const AppointmentForm = ({ appointment = null, onClose, onSuccess }) => {
@@ -59,7 +58,7 @@ const AppointmentForm = ({ appointment = null, onClose, onSuccess }) => {
 
       const json = await res.json();
       if (res.ok) {
-        setAvailableSlots(json);
+        setAvailableSlots(Array.isArray(json) ? json : []);
       } else {
         console.error("Failed to fetch available times:", json.message);
         setAvailableSlots([]);
@@ -67,7 +66,7 @@ const AppointmentForm = ({ appointment = null, onClose, onSuccess }) => {
     };
 
     fetchAvailableTimes();
-  }, [selectedDate, doctorId]);
+  }, [selectedDate, doctorId, user.token]);
 
   //fetching doctors
   useEffect(() => {
@@ -111,8 +110,10 @@ const AppointmentForm = ({ appointment = null, onClose, onSuccess }) => {
       const json = await res.json();
 
       if (res.ok) {
-        setAvailableDays(json.availableDays);
-        setSelectedDate(null); // reset previously picked date
+        setAvailableDays(Array.isArray(json.availableDays) ? json.availableDays : []);
+      } else {
+        console.error("Failed to fetch available days:", json.message);
+        setAvailableDays([]);
       }
     };
 
@@ -286,6 +287,7 @@ const AppointmentForm = ({ appointment = null, onClose, onSuccess }) => {
                   hour: "2-digit",
                   minute: "2-digit",
                   hour12: true,
+                  timeZone: "UTC"
                 })}
               </option>
             ))}
