@@ -1,7 +1,12 @@
+import { useState } from "react";
 import { useAuthContext } from "../../hooks/useAuthContext";
+import Modal from "../../components/Modal";
+import ProfileForm from "../../components/profile/ProfileForm";
 
 const ViewProfile = () => {
   const { user } = useAuthContext();
+
+  const [isModalOpen, setIsModalOpen] = useState();
 
   if (!user) {
     return (
@@ -42,10 +47,27 @@ const ViewProfile = () => {
 
         {/* Optional Edit Button */}
         <div className="mt-6">
-          <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+          <button 
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+            onClick={() => {
+              setIsModalOpen(true);
+            }}
+            >
             Edit Profile
           </button>
         </div>
+
+        {isModalOpen && (
+        <Modal onClose={() => setIsModalOpen(false)}>
+          <ProfileForm
+            profile={user}
+            onClose={() => setIsModalOpen(false)}
+            onSuccess={(json) => {
+              dispatch({type: "LOGIN", payload: json})
+            }}
+          />
+        </Modal>
+      )}
     </div>
   );
 };
