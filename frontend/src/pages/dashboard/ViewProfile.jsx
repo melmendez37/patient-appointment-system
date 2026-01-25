@@ -8,14 +8,6 @@ const ViewProfile = () => {
 
   const [isModalOpen, setIsModalOpen] = useState();
 
-  if (!user) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <p className="text-gray-500">Loading user info...</p>
-      </div>
-    );
-  }
-
   return (
     <div className="flex-1 p-6 bg-white">
       <h1 className="text-2xl font-bold mb-6 text-gray-900">Profile</h1>

@@ -6,10 +6,10 @@ const DashboardLayout = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      <div className="flex min-h-screen gap-6">
+      {!user && (<div className="flex min-h-screen gap-6">
         <Sidebar />
         <Outlet/>
-      </div>
+      </div>)}
     </div>
   );
 };
