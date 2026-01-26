@@ -20,8 +20,7 @@ const ProfileForm = ({ profile = null, onClose, onSuccess }) => {
   useEffect(() => {
     if (!user) return;
 
-    setFormData(
-      {
+    setFormData({
         name: user.name || "",
         email: user.email || "",
         phone: user.email || "",
@@ -29,10 +28,8 @@ const ProfileForm = ({ profile = null, onClose, onSuccess }) => {
         role: user.role || "",
         doctors: user.doctors || [],
         isActive: user.isActive ?? true,
-      },
-      [user],
-    );
-  });
+      });
+  }, [user]);
 
   const isAdmin = user.role === "admin";
 
