@@ -178,6 +178,16 @@ const ProfileForm = ({ profile = null, onClose, onSuccess }) => {
             </select>
           </>
         )}
+
+        <div className="mt-4">
+          <button
+            type="button"
+            onClick={handleSubmit}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+          >
+            Save changes
+          </button>
+        </div>
       </form>
     </div>
   );
