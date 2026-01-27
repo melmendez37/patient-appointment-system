@@ -87,6 +87,7 @@ const ViewAppointments = () => {
             appointment={editingAppointment} // null for POST
             onClose={() => setIsModalOpen(false)}
             onSuccess={fetchAppointments}
+            setEditingAppointment = {handleEdit}
           />
         </Modal>
       )}

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuthContext } from "../../hooks/useAuthContext";
 
-const AppointmentForm = ({ appointment = null, onClose, onSuccess }) => {
+const AppointmentForm = ({ appointment = null, onClose, onSuccess, setEditingAppointment}) => {
   const { user } = useAuthContext();
   const isEdit = Boolean(appointment);
   const [isWalkIn, setIsWalkIn] = useState(false);
@@ -10,9 +10,13 @@ const AppointmentForm = ({ appointment = null, onClose, onSuccess }) => {
   const [doctorId, setDoctorId] = useState("");
 
   const [availableDays, setAvailableDays] = useState([]);
-  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedDate, setSelectedDate] = useState(
+    isEdit ? appointment.startTime.split('T')[0] : ""
+  );
   const [availableSlots, setAvailableSlots] = useState([]);
-  const [selectedTime, setSelectedTime] = useState("");
+  const [selectedTime, setSelectedTime] = useState(
+    isEdit ? appointment.startTime.split("T")[1].slice(0,5) : ""
+  );
 
   const [formData, setFormData] = useState({
     patientName: "",
@@ -145,16 +149,21 @@ const AppointmentForm = ({ appointment = null, onClose, onSuccess }) => {
     setLoading(true);
     setError(false);
 
-    // if selectedTime is like "2026-02-02T11:30:00.000Z"
-    const timePart = new Date(selectedTime)
-      .toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false }); // "11:30"
+    let startTime;
+    if(!isEdit || (selectedDate && selectedTime)){
+      // if selectedTime is like "2026-02-02T11:30:00.000Z"
+      const timePart = new Date(selectedTime)
+        .toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false }); // "11:30"
 
-    // now you can split into hours and minutes
-    const [hours, minutes] = timePart.split(":").map(Number);
+      // now you can split into hours and minutes
+      const [hours, minutes] = timePart.split(":").map(Number);
 
-    // combine with selectedDate
-    const [year, month, day] = selectedDate.split("-").map(Number);
-    const startTime = new Date(year, month - 1, day, hours, minutes).toISOString();
+      // combine with selectedDate
+      const [year, month, day] = selectedDate.split("-").map(Number);
+      startTime = new Date(year, month - 1, day, hours, minutes).toISOString();
+    } else if(appointment?.startTime){
+      startTime = appointment.startTime;
+    }
     
     try {
       const payload = {
@@ -167,13 +176,11 @@ const AppointmentForm = ({ appointment = null, onClose, onSuccess }) => {
         isWalkIn: formData.isWalkIn || false,
       };
 
-      console.log(payload);
-
       const token = localStorage.getItem("token");
 
       const res = await fetch(
         isEdit
-          ? "http://localhost:5555/appointments/${appointment._id}"
+          ? `http://localhost:5555/appointments/${appointment._id}`
           : "http://localhost:5555/appointments/",
 
         {

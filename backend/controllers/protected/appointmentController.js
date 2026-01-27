@@ -122,16 +122,16 @@ export const getAllAppointments = async (req, res) => {
 };
 
 export const getAppointmentById = async (req, res) => {
+  console.log(req.user.doctors)
   try {
     const { id } = req.params;
-    const { role, id: userId, doctor } = req.user;
-
+    const { role, id: userId, doctors } = req.user;
     let filter = { _id: id };
 
     if (role === "doctor") {
-      filter.doctor = userId;
+      filter.doctor = {$in: [userId]};
     } else if (role === "staff") {
-      filter.doctor = doctor;
+      filter.doctor = {$in: doctors.map(String)};
     }
 
     const appointment = await Appointment.findOne(filter);
@@ -149,14 +149,13 @@ export const getAppointmentById = async (req, res) => {
 export const updateAppointmentById = async (req, res) => {
   try {
     const { id } = req.params;
-    const { role, id: userId, doctor } = req.user;
-
+    const { role, id: userId, doctors } = req.user;
     let filter = { _id: id };
 
     if (role === "doctor") {
-      filter.doctor = userId;
+      filter.doctor = {$in: [userId]};
     } else if (role === "staff") {
-      filter.doctor = doctor;
+      filter.doctor = {$in: doctors.map(String)};
     }
 
     let updateData = {};
@@ -183,6 +182,7 @@ export const updateAppointmentById = async (req, res) => {
 
     //admin logic (optional)?
 
+    
     const updatedAppointment = await Appointment.findOneAndUpdate(
       filter,
       updateData,
