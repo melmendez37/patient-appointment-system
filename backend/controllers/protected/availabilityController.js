@@ -4,8 +4,9 @@ import { Appointment } from "../../models/appointmentModel.js";
 import { generateAvailableSlots } from "../../utils/generateAvailableSlots.js";
 
 export const addAvailability = async (req, res) => {
+  console.log(req.user)
   try {
-    const { role } = req.user;
+    const { role, doctors } = req.user;
 
     const doctorExists = await User.findOne({
       _id: req.body.doctor,
@@ -17,7 +18,7 @@ export const addAvailability = async (req, res) => {
     }
 
     if (role !== "admin") {
-      if (req.user.doctor.toString() !== req.body.doctor) {
+      if (!doctors.includes(req.body.doctor)) {
         return res.status(403).send({
           message: "You can only add schedule for your assigned doctor",
         });
@@ -37,6 +38,7 @@ export const addAvailability = async (req, res) => {
     res.status(201).send(availability);
   } catch (error) {
     res.status(500).send({ message: "Error adding schedule", error });
+    console.log(error)
   }
 };
 
@@ -64,13 +66,15 @@ export const getAvailabilities = async (req, res) => {
 export const getAvailabilityById = async (req, res) => {
   try {
     const { id } = req.params;
+    const { role, id: userId, doctors } = req.user;
     let filter = { _id: id };
 
-    if (req.user.role === "doctor") {
-      filter.doctor = req.user.id;
-    } else if (req.user.role === "staff") {
-      filter.doctor = req.user.doctor;
+    if (role === "doctor") {
+      filter.doctor = {$in: [userId]};
+    } else if (role === "staff") {
+      filter.doctor = {$in: doctors.map(String)};
     }
+
     const availability = await Availability.findOne(filter);
 
     if (!availability) {
@@ -226,16 +230,13 @@ export const getAvailableSlots = async (req, res) => {
 export const updateAvailability = async (req, res) => {
   try {
     const { id } = req.params;
-    const { role, id: userId, doctor } = req.user;
-
+    const { role, id: userId, doctors } = req.user;
     let filter = { _id: id };
 
-    if (role !== "admin") {
-      if (role === "doctor") {
-        filter.doctor = userId;
-      } else if (role === "staff") {
-        filter.doctor = doctor;
-      }
+    if (role === "doctor") {
+      filter.doctor = {$in: [userId]};
+    } else if (role === "staff") {
+      filter.doctor = {$in: doctors.map(String)};
     }
 
     const updatedAvailability = await Availability.findOneAndUpdate(

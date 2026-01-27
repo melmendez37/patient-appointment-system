@@ -74,22 +74,53 @@ const AvailabilityForm = ({availability = null, onClose, onSuccess}) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+        
         if (dayOfWeek.length === 0) {
-            alert("Select at least one day");
+            console.log("Select at least one day");
             return;
         }
 
-        const payload = dayOfWeek.map((day) => ({
-            doctor: doctorId,
-            dayOfWeek: day,
-            startTime,
-            endTime,
-            isAvailable,
-        }));
+        try {
+            const payload = {
+                doctor: doctorId,
+                dayOfWeek,
+                startTime,
+                endTime,
+                isAvailable,
+            };
 
-        console.log(payload);
-        // send to backend
+            console.log(payload)
+
+            const token = localStorage.getItem("token");
+
+            const res = await fetch(
+            isEdit
+            ? `http://localhost:5555/schedules/${availability._id}`
+            : "http://localhost:5555/schedules/",
+
+            {
+            method: isEdit ? "PUT" : "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(payload),
+            },
+        );
+
+        const json = await res.json();
+
+        if (!res.ok) {
+            throw new Error(json.error || "Something went wrong. Try again later.");
+        }
+
+        onSuccess();
+        onClose();
+        } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
     };
 
     return (
@@ -180,6 +211,7 @@ const AvailabilityForm = ({availability = null, onClose, onSuccess}) => {
         <button
         type="submit"
         className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 font-medium"
+        onClick={handleSubmit}
         >
             Save Availability
         </button>
