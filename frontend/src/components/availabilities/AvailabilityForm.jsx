@@ -1,241 +1,239 @@
-import React, { useEffect, useState } from 'react'
-import { useAuthContext } from '../../hooks/useAuthContext'
+import React, { useEffect, useState } from "react";
+import { useAuthContext } from "../../hooks/useAuthContext";
 
-const AvailabilityForm = ({availability = null, onClose, onSuccess}) => {
-    const {user} = useAuthContext();
-    console.log(user)
-    const isEdit = Boolean(availability);
+const AvailabilityForm = ({ availability = null, onClose, onSuccess }) => {
+  const { user } = useAuthContext();
+  console.log(user);
+  const isEdit = Boolean(availability);
 
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-    const [doctors, setDoctors] = useState([]);
-    const [doctorId, setDoctorId] = useState("");
-    const [startTime, setStartTime] = useState("");
-    const [endTime, setEndTime] = useState("");
-    const [dayOfWeek, setDayOfWeek] = useState([]);
-    const [isAvailable, setIsAvailable] = useState(true);
+  const [doctors, setDoctors] = useState([]);
+  const [doctorId, setDoctorId] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [dayOfWeek, setDayOfWeek] = useState([]);
+  const [isAvailable, setIsAvailable] = useState(true);
 
-    const toggleDay = (day) => {
-        setDayOfWeek((prev) =>
-            prev.includes(day)
-            ? prev.filter((d) => d !== day) // remove
-            : [...prev, day] // add
-        );
-    };
+  const toggleDay = (day) => {
+    setDayOfWeek(
+      (prev) =>
+        prev.includes(day)
+          ? prev.filter((d) => d !== day) // remove
+          : [...prev, day], // add
+    );
+  };
 
-    const DAYS = [
-        { label: "Sun", value: 0 },
-        { label: "Mon", value: 1 },
-        { label: "Tue", value: 2 },
-        { label: "Wed", value: 3 },
-        { label: "Thu", value: 4 },
-        { label: "Fri", value: 5 },
-        { label: "Sat", value: 6 },
-    ];
-    
-    const [formData, setFormData] = useState({
-        doctor: "",
-        dayOfWeek: "",
-        startTime: "",
-        endTime: "",
-        isAvailable: ""
-    });
+  const DAYS = [
+    { label: "Sun", value: 0 },
+    { label: "Mon", value: 1 },
+    { label: "Tue", value: 2 },
+    { label: "Wed", value: 3 },
+    { label: "Thu", value: 4 },
+    { label: "Fri", value: 5 },
+    { label: "Sat", value: 6 },
+  ];
 
-    //for edit function
-    useEffect(() => {
-        if(availability){
-            console.log(availability);
+  const [formData, setFormData] = useState({
+    doctor: "",
+    dayOfWeek: "",
+    startTime: "",
+    endTime: "",
+    isAvailable: "",
+  });
 
-            setDoctorId(availability.doctor._id),
-            setStartTime(availability.startTime),
-            setDayOfWeek(availability.dayOfWeek)
-            setEndTime(availability.endTime)
-            setIsAvailable(availability.isAvailable),
+  //for edit function
+  useEffect(() => {
+    if (availability) {
+      console.log(availability);
 
-            setFormData({
-                doctor: availability.doctor._id,
-                dayOfWeek: availability.dayOfWeek,
-                startTime: availability.startTime,
-                endTime: availability.endTime,
-                isAvailable: availability.isAvailable
-            })
-        }
+      (setDoctorId(availability.doctor._id),
+        setStartTime(availability.startTime),
+        setDayOfWeek(availability.dayOfWeek));
+      setEndTime(availability.endTime);
+      (setIsAvailable(availability.isAvailable),
+        setFormData({
+          doctor: availability.doctor._id,
+          dayOfWeek: availability.dayOfWeek,
+          startTime: availability.startTime,
+          endTime: availability.endTime,
+          isAvailable: availability.isAvailable,
+        }));
+    }
+  }, [availability]);
 
-        
-
-    }, [availability])
-
-    //fetching doctors
-    useEffect(() => {
-        if (!user) return;
-        const fetchDoctors = async () => {
-        try {
-            const res = await fetch("http://localhost:5555/users/doctors", {
-            headers: {
-                Authorization: `Bearer ${user.token}`,
-            },
-            });
-            const json = await res.json();
-
-            if (res.ok) {
-            setDoctors(json);
-            } else {
-            console.error("Error fetching doctors:", json.message);
-            }
-        } catch (error) {
-            console.error("server error.");
-        }
-        };
-
-        fetchDoctors();
-    }, []);
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        
-        if (dayOfWeek.length === 0) {
-            console.log("Select at least one day");
-            return;
-        }
-
-        try {
-            const payload = {
-                doctor: doctorId,
-                dayOfWeek,
-                startTime,
-                endTime,
-                isAvailable,
-            };
-
-            console.log(payload)
-
-            const token = localStorage.getItem("token");
-
-            const res = await fetch(
-            isEdit
-            ? `http://localhost:5555/schedules/${availability._id}`
-            : "http://localhost:5555/schedules/",
-
-            {
-            method: isEdit ? "PUT" : "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify(payload),
-            },
-        );
-
+  //fetching doctors
+  useEffect(() => {
+    if (!user) return;
+    const fetchDoctors = async () => {
+      try {
+        const res = await fetch("http://localhost:5555/users/doctors", {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        });
         const json = await res.json();
 
-        if (!res.ok) {
-            throw new Error(json.error || "Something went wrong. Try again later.");
+        if (res.ok) {
+          setDoctors(json);
+        } else {
+          console.error("Error fetching doctors:", json.message);
         }
+      } catch (error) {
+        console.error("server error.");
+      }
+    };
 
-        onSuccess();
-        onClose();
-        } catch (error) {
+    fetchDoctors();
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (dayOfWeek.length === 0) {
+      console.log("Select at least one day");
+      return;
+    }
+
+    try {
+      const payload = {
+        doctor: doctorId,
+        dayOfWeek,
+        startTime,
+        endTime,
+        isAvailable,
+      };
+
+      console.log(payload);
+
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(
+        isEdit
+          ? `http://localhost:5555/schedules/${availability._id}`
+          : "http://localhost:5555/schedules/",
+
+        {
+          method: isEdit ? "PUT" : "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        },
+      );
+
+      const json = await res.json();
+
+      if (!res.ok) {
+        throw new Error(json.error || "Something went wrong. Try again later.");
+      }
+
+      onSuccess();
+      onClose();
+    } catch (error) {
       setError(error.message);
     } finally {
       setLoading(false);
     }
-    };
+  };
 
-    return (
+  return (
     <form action={handleSubmit} className="space-y-4">
-        {/* // doctor */}
-        <div>
-          <label className="block text-sm font-medium mb-1">Doctor</label>
+      {/* // doctor */}
+      <div>
+        <label className="block text-sm font-medium mb-1">Doctor</label>
 
-          <select
-            value={doctorId}
-            onChange={(e) => setDoctorId(e.target.value)}
-            required
-            className="w-full border rounded-lg px-3 py-2 text-sm"
-          >
-            <option value="">Select a doctor</option>
+        <select
+          value={doctorId}
+          onChange={(e) => setDoctorId(e.target.value)}
+          required
+          className="w-full border rounded-lg px-3 py-2 text-sm"
+        >
+          <option value="">Select a doctor</option>
 
-            {doctors.map((doctor) => (
-              <option key={doctor._id} value={doctor._id}>
-                {doctor.name}
-              </option>
-            ))}
-          </select>
-        </div>
+          {doctors.map((doctor) => (
+            <option key={doctor._id} value={doctor._id}>
+              {doctor.name}
+            </option>
+          ))}
+        </select>
+      </div>
 
-        {/* // dayOfWeek */}
-        <div>
-            <label className="block text-sm font-medium mb-1">Days of Week</label>
+      {/* // dayOfWeek */}
+      <div>
+        <label className="block text-sm font-medium mb-1">Days of Week</label>
 
-            <div className="flex gap-2 flex-wrap">
-                {DAYS.map((day) => {
-                const selected = dayOfWeek.includes(day.value);
+        <div className="flex gap-2 flex-wrap">
+          {DAYS.map((day) => {
+            const selected = dayOfWeek.includes(day.value);
 
-                return (
-                    <button
-                    type="button"
-                    key={day.value}
-                    onClick={() => toggleDay(day.value)}
-                    className={`px-3 py-2 rounded-lg text-sm border transition
-                        ${selected
-                        ? "bg-blue-600 text-white border-blue-600"
-                        : "bg-white hover:bg-gray-100"
+            return (
+              <button
+                type="button"
+                key={day.value}
+                onClick={() => toggleDay(day.value)}
+                className={`px-3 py-2 rounded-lg text-sm border transition
+                        ${
+                          selected
+                            ? "bg-blue-600 text-white border-blue-600"
+                            : "bg-white hover:bg-gray-100"
                         }`}
-                    >
-                    {day.label}
-                    </button>
-                );
-                })}
-            </div>
+              >
+                {day.label}
+              </button>
+            );
+          })}
         </div>
-        {/* // startTime */}
-        <div>
-            <label className="block text-sm font-medium mb-1">Start Time</label>
-            <input
-                type="time"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-                required
-                className="w-full border rounded-lg px-3 py-2 text-sm"
-            />
-        </div>
+      </div>
+      {/* // startTime */}
+      <div>
+        <label className="block text-sm font-medium mb-1">Start Time</label>
+        <input
+          type="time"
+          value={startTime}
+          onChange={(e) => setStartTime(e.target.value)}
+          required
+          className="w-full border rounded-lg px-3 py-2 text-sm"
+        />
+      </div>
 
-        {/* // endTime */}
-        <div>
-            <label className="block text-sm font-medium mb-1">End Time</label>
-            <input
-                type="time"
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
-                required
-                className="w-full border rounded-lg px-3 py-2 text-sm"
-            />
-        </div>
+      {/* // endTime */}
+      <div>
+        <label className="block text-sm font-medium mb-1">End Time</label>
+        <input
+          type="time"
+          value={endTime}
+          onChange={(e) => setEndTime(e.target.value)}
+          required
+          className="w-full border rounded-lg px-3 py-2 text-sm"
+        />
+      </div>
 
-        {/* // isAvailable */}
-        <div>
-            <label className="block text-sm font-medium mb-1">Availability</label>
-            <select
-                value={isAvailable}
-                onChange={(e) => setIsAvailable(e.target.value === "true")}
-                className="w-full border rounded-lg px-3 py-2 text-sm"
-            >
-                <option value="true">Available</option>
-                <option value="false">Not Available</option>
-            </select>
-        </div>
+      {/* // isAvailable */}
+      <div>
+        <label className="block text-sm font-medium mb-1">Availability</label>
+        <select
+          value={isAvailable}
+          onChange={(e) => setIsAvailable(e.target.value === "true")}
+          className="w-full border rounded-lg px-3 py-2 text-sm"
+        >
+          <option value="true">Available</option>
+          <option value="false">Not Available</option>
+        </select>
+      </div>
 
-        {/* // submit */}
-        <button
+      {/* // submit */}
+      <button
         type="submit"
         className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 font-medium"
         onClick={handleSubmit}
-        >
-            Save Availability
-        </button>
+      >
+        Save Availability
+      </button>
     </form>
-  )
-}
+  );
+};
 
-export default AvailabilityForm
+export default AvailabilityForm;

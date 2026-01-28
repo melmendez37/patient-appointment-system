@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import { useAuthContext } from "../../hooks/useAuthContext";
 
-const AppointmentForm = ({ appointment = null, onClose, onSuccess, setEditingAppointment}) => {
+const AppointmentForm = ({
+  appointment = null,
+  onClose,
+  onSuccess,
+  setEditingAppointment,
+}) => {
   const { user } = useAuthContext();
   const isEdit = Boolean(appointment);
   const [isWalkIn, setIsWalkIn] = useState(false);
@@ -11,11 +16,11 @@ const AppointmentForm = ({ appointment = null, onClose, onSuccess, setEditingApp
 
   const [availableDays, setAvailableDays] = useState([]);
   const [selectedDate, setSelectedDate] = useState(
-    isEdit ? appointment.startTime.split('T')[0] : ""
+    isEdit ? appointment.startTime.split("T")[0] : "",
   );
   const [availableSlots, setAvailableSlots] = useState([]);
   const [selectedTime, setSelectedTime] = useState(
-    isEdit ? appointment.startTime.split("T")[1].slice(0,5) : ""
+    isEdit ? appointment.startTime.split("T")[1].slice(0, 5) : "",
   );
 
   const [formData, setFormData] = useState({
@@ -34,20 +39,23 @@ const AppointmentForm = ({ appointment = null, onClose, onSuccess, setEditingApp
   //form data
   useEffect(() => {
     if (appointment) {
-      console.log(appointment)
+      console.log(appointment);
       const start = new Date(appointment.startTime);
 
       const date = [
         start.getFullYear(),
         String(start.getMonth() + 1).padStart(2, "0"),
         String(start.getDate()).padStart(2, "0"),
-      ].join("-")
+      ].join("-");
 
-      const time = appointment.startTime.split("T")[1].split("Z")[0].slice(0, 5);
+      const time = appointment.startTime
+        .split("T")[1]
+        .split("Z")[0]
+        .slice(0, 5);
 
       setSelectedDate(date);
       setSelectedTime(time);
-      setDoctorId(appointment.doctor?._id)
+      setDoctorId(appointment.doctor?._id);
 
       setFormData({
         patientName: appointment.patientName,
@@ -127,7 +135,9 @@ const AppointmentForm = ({ appointment = null, onClose, onSuccess, setEditingApp
       const json = await res.json();
 
       if (res.ok) {
-        setAvailableDays(Array.isArray(json.availableDays) ? json.availableDays : []);
+        setAvailableDays(
+          Array.isArray(json.availableDays) ? json.availableDays : [],
+        );
       } else {
         console.error("Failed to fetch available days:", json.message);
         setAvailableDays([]);
@@ -150,10 +160,13 @@ const AppointmentForm = ({ appointment = null, onClose, onSuccess, setEditingApp
     setError(false);
 
     let startTime;
-    if(!isEdit || (selectedDate && selectedTime)){
+    if (!isEdit || (selectedDate && selectedTime)) {
       // if selectedTime is like "2026-02-02T11:30:00.000Z"
-      const timePart = new Date(selectedTime)
-        .toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false }); // "11:30"
+      const timePart = new Date(selectedTime).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      }); // "11:30"
 
       // now you can split into hours and minutes
       const [hours, minutes] = timePart.split(":").map(Number);
@@ -161,10 +174,10 @@ const AppointmentForm = ({ appointment = null, onClose, onSuccess, setEditingApp
       // combine with selectedDate
       const [year, month, day] = selectedDate.split("-").map(Number);
       startTime = new Date(year, month - 1, day, hours, minutes).toISOString();
-    } else if(appointment?.startTime){
+    } else if (appointment?.startTime) {
       startTime = appointment.startTime;
     }
-    
+
     try {
       const payload = {
         patientName: formData.patientName,
@@ -320,7 +333,7 @@ const AppointmentForm = ({ appointment = null, onClose, onSuccess, setEditingApp
                   hour: "2-digit",
                   minute: "2-digit",
                   hour12: true,
-                  timeZone: "UTC"
+                  timeZone: "UTC",
                 })}
               </option>
             ))}
@@ -357,7 +370,14 @@ const AppointmentForm = ({ appointment = null, onClose, onSuccess, setEditingApp
           <button
             type="button"
             onClick={handleSubmit}
-            disabled={!formData.patientName || !formData.patientEmail || !formData.patientPhone || !doctorId || !selectedDate || !selectedTime}
+            disabled={
+              !formData.patientName ||
+              !formData.patientEmail ||
+              !formData.patientPhone ||
+              !doctorId ||
+              !selectedDate ||
+              !selectedTime
+            }
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
           >
             Book Appointment

@@ -21,14 +21,14 @@ const ProfileForm = ({ profile = null, onClose, onSuccess }) => {
     if (!user) return;
 
     setFormData({
-        name: user.name || "",
-        email: user.email || "",
-        phone: user.email || "",
-        password: "",
-        role: user.role || "",
-        doctors: user.doctors || [],
-        isActive: user.isActive ?? true,
-      });
+      name: user.name || "",
+      email: user.email || "",
+      phone: user.email || "",
+      password: "",
+      role: user.role || "",
+      doctors: user.doctors || [],
+      isActive: user.isActive ?? true,
+    });
   }, [user]);
 
   const isAdmin = user.role === "admin";
