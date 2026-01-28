@@ -44,8 +44,27 @@ const AvailabilityForm = ({availability = null, onClose, onSuccess}) => {
 
     //for edit function
     useEffect(() => {
+        if(availability){
+            console.log(availability);
 
-    })
+            setDoctorId(availability.doctor._id),
+            setStartTime(availability.startTime),
+            setDayOfWeek(availability.dayOfWeek)
+            setEndTime(availability.endTime)
+            setIsAvailable(availability.isAvailable),
+
+            setFormData({
+                doctor: availability.doctor._id,
+                dayOfWeek: availability.dayOfWeek,
+                startTime: availability.startTime,
+                endTime: availability.endTime,
+                isAvailable: availability.isAvailable
+            })
+        }
+
+        
+
+    }, [availability])
 
     //fetching doctors
     useEffect(() => {
