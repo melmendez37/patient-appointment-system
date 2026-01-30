@@ -10,7 +10,9 @@ import { useAuthContext } from "./hooks/useAuthContext.jsx";
 
 const App = () => {
   const ProtectedDashboard = ({ children }) => {
-    const { user } = useAuthContext();
+    const { user, authReady } = useAuthContext();
+    if(!authReady) return null;
+
     if (!user) return <Navigate to="/login" replace />;
     return children;
   };
