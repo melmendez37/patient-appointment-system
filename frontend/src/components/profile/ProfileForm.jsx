@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useAuthContext } from "../../hooks/useAuthContext";
 
-const ProfileForm = ({ profile = null, onClose, onSuccess }) => {
+const ProfileForm = ({ onClose, onSuccess }) => {
   const { user } = useAuthContext();
-  const isEdit = Boolean(profile);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const isAdmin = user?.role === "admin";
 
   const [formData, setFormData] = useState({
     name: "",
@@ -21,21 +19,21 @@ const ProfileForm = ({ profile = null, onClose, onSuccess }) => {
     if (!user) return;
 
     setFormData({
-      name: user.name || "",
-      email: user.email || "",
-      phone: user.email || "",
+      name: user.user.name || "",
+      email: user.user.email || "",
+      phone: user.user.phone || "",
       password: "",
-      role: user.role || "",
-      doctors: user.doctors || [],
-      isActive: user.isActive ?? true,
+      role: user.user.role || "",
+      doctors: user.user.doctors || [],
+      isActive: user.user.isActive ?? true,
     });
   }, [user]);
 
-  const isAdmin = user.role === "admin";
-
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -90,10 +88,10 @@ const ProfileForm = ({ profile = null, onClose, onSuccess }) => {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <input
+            type="text"
             name="name"
             value={formData.name}
             onChange={handleChange}
-            placeholder="Full name"
             className="w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
           />
         </div>
@@ -102,7 +100,6 @@ const ProfileForm = ({ profile = null, onClose, onSuccess }) => {
           <input
             name="email"
             type="email"
-            placeholder="example@gmail.com"
             value={formData.email}
             onChange={handleChange}
             className="w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
@@ -111,7 +108,6 @@ const ProfileForm = ({ profile = null, onClose, onSuccess }) => {
         <div>
           <input
             name="phone"
-            placeholder="09999999999"
             value={formData.phone}
             onChange={handleChange}
             className="w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
