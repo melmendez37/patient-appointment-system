@@ -5,6 +5,7 @@ import DashboardLayout from "./pages/dashboard/DashboardLayout.jsx";
 import ViewAppointments from "./pages/dashboard/ViewAppointments.jsx";
 import ViewSchedules from "./pages/dashboard/ViewSchedules.jsx";
 import ViewProfile from "./pages/dashboard/ViewProfile.jsx";
+import ViewUsers from "./pages/dashboard/ViewUsers.jsx";
 import "react-datepicker/dist/react-datepicker.css";
 import { useAuthContext } from "./hooks/useAuthContext.jsx";
 
@@ -32,6 +33,7 @@ const App = () => {
         <Route path="appointments" element={<ViewAppointments />} />
         <Route path="schedules" element={<ViewSchedules />} />
         <Route path="profile" element={<ViewProfile />} />
+        <Route path="users" element={<ViewUsers />} />
       </Route>
     </Routes>
   );

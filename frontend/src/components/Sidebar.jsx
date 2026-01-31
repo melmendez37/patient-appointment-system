@@ -12,7 +12,7 @@ const Sidebar = () => {
             <Link to="/dashboard/schedules" className='px-4 py-2 rounded hover:bg-gray-700 transition'>Availability</Link>
             <Link to="/dashboard/profile" className='px-4 py-2 rounded hover:bg-gray-700 transition'>Profile</Link>
             {user?.user.role === "admin" && (
-                <Link className='px-4 py-2 rounded hover:bg-gray-700 transition'>Users</Link>
+                <Link to="/dashboard/users" className='px-4 py-2 rounded hover:bg-gray-700 transition'>Users</Link>
             )}
         </nav>
    </div>
