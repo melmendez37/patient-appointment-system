@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useAuthContext } from "../../hooks/useAuthContext";
 
 const ProfileForm = ({ profile, onClose, onSuccess }) => {
-  const { user,setUser } = useAuthContext();
+  const { user } = useAuthContext();
   const isAdmin = user.user.role === "admin";
   const isStaff = user.user.role === "staff";
+  const [setUser] = useState(null);
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -101,7 +102,12 @@ const ProfileForm = ({ profile, onClose, onSuccess }) => {
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
+        role: formData.role,
+        isActive: !!formData.isActive,
+        doctors: formData.role === "staff" ? formData.doctors : undefined,
       };
+
+      console.log("Submitting profile update with payload:", payload);
 
       if (formData.password) {
         payload.password = formData.password;
@@ -165,16 +171,6 @@ const ProfileForm = ({ profile, onClose, onSuccess }) => {
             name="phone"
             value={formData.phone}
             onChange={handleChange}
-            className="w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        <div>
-          <input
-            name="password"
-            type="password"
-            value={formData.password}
-            onChange={handleChange}
-            placeholder="New password (optional)"
             className="w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
           />
         </div>

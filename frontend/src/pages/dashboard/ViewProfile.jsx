@@ -2,10 +2,12 @@ import { useState, useEffect } from "react";
 import { useAuthContext } from "../../hooks/useAuthContext";
 import Modal from "../../components/Modal";
 import ProfileForm from "../../components/profile/ProfileForm";
+import ChangePassword from "../../components/profile/ChangePassword";
 
 const ViewProfile = () => {
   const { user, setUser } = useAuthContext();
   const [isModalOpen, setIsModalOpen] = useState();
+  const [modalType, setModalType] = useState(null);
   const [profile, setProfile] = useState(null);
 
   const fetchProfile = async () => {
@@ -58,24 +60,39 @@ const ViewProfile = () => {
       </div>
 
       {/* Optional Edit Button */}
-      <div className="mt-6">
+      <div className="flex justify-around gap-4 mt-6">
         <button
           className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
           onClick={() => {
-            setIsModalOpen(true);
+            setModalType("profile");
           }}
         >
           Edit Profile
         </button>
+
+        <button
+          className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+          onClick={() => {
+            setModalType("password");
+          }}
+        >
+          Change Password
+        </button>
       </div>
 
-      {isModalOpen && (
-        <Modal onClose={() => setIsModalOpen(false)}>
-          <ProfileForm
+      {modalType && (
+        <Modal onClose={() => setModalType(null)}>
+          {modalType === "profile" && (
+            <ProfileForm
             profile={profile}
-            onClose={() => setIsModalOpen(false)}
+            onClose={() => setModalType(null)}
             onSuccess={fetchProfile}
           />
+          )}
+
+          {modalType === "password" && (
+            <ChangePassword onClose={() => setModalType(null)} />
+          )}
         </Modal>
       )}
     </div>
