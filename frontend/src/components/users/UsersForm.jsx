@@ -6,6 +6,7 @@ const UsersForm = ({ user, onClose, onSuccess }) => {
   const isEdit = Boolean(user);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -25,6 +26,24 @@ const UsersForm = ({ user, onClose, onSuccess }) => {
         : [...prev.doctors, doctorId],
     }));
   };
+
+  useEffect(() => {
+    if (isEdit && user) {
+      setFormData({
+        name: user.name || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        role: user.role || "patient",
+        isActive:
+          user.isActive === true
+            ? "true"
+            : user.isActive === false
+            ? "false"
+            : "",
+        doctors: user.doctors || [],
+      });
+    }
+  }, [isEdit, user]);
 
   //fetching doctors
   useEffect(() => {
@@ -69,16 +88,16 @@ const UsersForm = ({ user, onClose, onSuccess }) => {
         email: formData.email,
         phone: formData.phone,
         role: formData.role,
-        isActive: formData.isActive || "scheduled",
-        doctors: formData.doctors,
+        isActive: !!formData.isActive,
+        doctors: formData.role === "staff" ? formData.doctors : undefined,
       };
 
       const token = localStorage.getItem("token");
 
       const res = await fetch(
         isEdit
-          ? `http://localhost:5555/users/${authUser.user.id}`
-          : `http://localhost:5555/users/`,
+          ? `http://localhost:5555/users/${user._id}`
+          : "http://localhost:5555/users/",
         {
           method: isEdit ? "PUT" : "POST",
           headers: {
@@ -90,12 +109,14 @@ const UsersForm = ({ user, onClose, onSuccess }) => {
       );
 
       const json = await res.json();
+      console.log(json);
 
       if (!res.ok) {
-        throw new Error(json.error || "Something went wrong. Try again later.");
+        setError(json.error || "Something went wrong. Try again later.");
+        return;
       }
 
-      onSuccess();
+      onSuccess(json);
       onClose();
     } catch (error) {
       setError(error.message);
@@ -200,7 +221,7 @@ const UsersForm = ({ user, onClose, onSuccess }) => {
             onChange={handleChange}
             className="w-full rounded-lg border px-3 py-2 text-sm"
           >
-            <option value="scheduled">Select Status</option>
+            <option value="">Select Status</option>
             <option value="true">Active</option>
             <option value="false">Inactive</option>
           </select>

@@ -17,7 +17,7 @@ router.post(
   "/",
   authMiddleware,
   authorizeRoles("admin"),
-  validateFields(["name", "email", "phone", "password", "role"]),
+  validateFields(["name", "email", "phone", "role"]),
   addNewUser
 );
 

@@ -5,33 +5,30 @@ import bcrypt from "bcrypt";
 export const addNewUser = async (req, res) => {
   try {
     if(req.user.role !== "admin"){
-      res.status(403).send({ message: "Admins only" });
+      return res.status(403).send({ message: "Admins only" });
     }
 
     if(req.body.doctors !== undefined){
-      if(role !== "staff"){
-        res.status(400).json({ message: "Only staff can have assigned doctors"})
+      if(req.body.role !== "staff"){
+        return res.status(400).json({ message: "Only staff can have assigned doctors" })
       }
 
-      if(!Array.isArray(doctors)){
-        return res.status(400).json({
-          message: "Doctors must be an array",
-        });
+      if(!Array.isArray(req.body.doctors)){
+        return res.status(400).json({ message: "Doctors must be an array" });
       }
 
       const foundDoctors = await User.find({
-        _id: { $in: doctors },
+        _id: { $in: req.body.doctors },
         role: "doctor",
       })
 
-      if (foundDoctors.length !== doctors.length) {
-        return res.status(400).json({
-          message: "One or more doctor IDs are invalid",
-        });
+      if (foundDoctors.length !== req.body.doctors.length) {
+        return res.status(400).json({ message: "One or more doctor IDs are invalid" });
       }
     }
 
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const DEFAULT_PASSWORD = "12345678";
+    const hashedPassword = await bcrypt.hash(DEFAULT_PASSWORD, 10);
 
     const newUser = new User({
       name: req.body.name,
@@ -39,14 +36,16 @@ export const addNewUser = async (req, res) => {
       phone: req.body.phone,
       password: hashedPassword,
       role: req.body.role,
-      doctors: role === "staff" ? req.body.doctors || [] : [],
+      isActive: req.body.isActive || false,
+      doctors: req.body.role === "staff" ? req.body.doctors || [] : [],
     });
 
     const user = await User.create(newUser);
 
     res.status(201).send(user);
   } catch (error) {
-    res.status(500).send({ message: "Error creating user", error });
+    res.status(500).send({ message: "Error creating user", error:error.message });
+    console.log(error.message);
   }
 };
 

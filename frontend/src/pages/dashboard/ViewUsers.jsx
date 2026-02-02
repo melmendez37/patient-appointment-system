@@ -5,14 +5,13 @@ import UsersRow from "../../components/users/UsersRow";
 import UsersForm from "../../components/users/UsersForm";
 
 const ViewUsers = () => {
-  const { user, setUser } = useAuthContext();
+  const { user } = useAuthContext();
   const [isModalOpen, setIsModalOpen] = useState();
   const [allUsers, setAllUsers] = useState(null);
   const canManage = user?.user.role === "admin";
   const [editingUser, setEditingUser] = useState(null);
 
-  useEffect(() => {
-    const fetchUsers = async () => {
+  const fetchUsers = async () => {
       if (!user) return;
       const response = await fetch(`http://localhost:5555/users/`, {
         headers: { Authorization: `Bearer ${user.token}` },
@@ -20,6 +19,8 @@ const ViewUsers = () => {
       const json = await response.json();
       if (response.ok) setAllUsers(json.data);
     };
+
+  useEffect(() => {
     fetchUsers();
   }, [user]);
 
@@ -68,10 +69,7 @@ const ViewUsers = () => {
           <UsersForm
             user={editingUser}
             onClose={() => setIsModalOpen(false)}
-            onSuccess={(updatedUser) => {
-              setProfile(updatedUser);
-              setUser(updatedUser);
-            }}
+            onSuccess={fetchUsers}
             setEditingUser={handleEdit}
           />
         </Modal>
