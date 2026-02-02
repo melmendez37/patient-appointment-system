@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useAuthContext } from "../../hooks/useAuthContext";
 
-const ProfileForm = ({ onClose, onSuccess }) => {
-  const { user } = useAuthContext();
-  const isAdmin = user?.role === "admin";
+const ProfileForm = ({ profile, onClose, onSuccess }) => {
+  const { user,setUser } = useAuthContext();
+  const isAdmin = user.user.role === "admin";
+  const isStaff = user.user.role === "staff";
+  const [doctors, setDoctors] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -16,18 +20,69 @@ const ProfileForm = ({ onClose, onSuccess }) => {
   });
 
   useEffect(() => {
-    if (!user) return;
+    const fetchUser = async () => {
+      if(!user) return;
+      try {
+        const res = await fetch(
+          `http://localhost:5555/users/${user.user.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+            },
+          }
+        );
+        const json = await res.json();
+
+        if(res.ok){
+          setUser(json);
+        }
+      } catch (error) {
+        console.log("Error fetching user:", error);
+      }
+    }
+
+    fetchUser();
+  }, [user]);
+
+  useEffect(() => {
+    if (!profile) return;
+    console.log("ProfileForm profile:", profile);
 
     setFormData({
-      name: user.user.name || "",
-      email: user.user.email || "",
-      phone: user.user.phone || "",
+      name: profile.name || "",
+      email: profile.email || "",
+      phone: profile.phone || "",
       password: "",
-      role: user.user.role || "",
-      doctors: user.user.doctors || [],
-      isActive: user.user.isActive ?? true,
+      role: profile.role || "",
+      doctors: profile.doctors || [],
+      isActive: profile.isActive ?? true,
     });
   }, [user]);
+
+   //fetching doctors
+    useEffect(() => {
+      const fetchDoctors = async () => {
+        if (!user) return;
+        try {
+          const res = await fetch("http://localhost:5555/users/doctors", {
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+            },
+          });
+          const json = await res.json();
+  
+          if (res.ok) {
+            setDoctors(json);
+          } else {
+            console.error("Error fetching doctors:", json.message);
+          }
+        } catch (error) {
+          console.error("server error.");
+        }
+      };
+  
+      fetchDoctors();
+    }, []);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -58,7 +113,7 @@ const ProfileForm = ({ onClose, onSuccess }) => {
         payload.isActive = formData.isActive;
       }
 
-      const res = await fetch(`http://localhost:5555/users/${user._id}`, {
+      const res = await fetch(`http://localhost:5555/users/${profile._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -124,20 +179,8 @@ const ProfileForm = ({ onClose, onSuccess }) => {
           />
         </div>
 
-        {isAdmin && (
+        {isStaff && (
           <>
-            {/* Role */}
-            <select
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-              className="w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="staff">Staff</option>
-              <option value="doctor">Doctor</option>
-              <option value="admin">Admin</option>
-            </select>
-
             {/* Doctors */}
             <select
               multiple
@@ -155,6 +198,22 @@ const ProfileForm = ({ onClose, onSuccess }) => {
                   {d.name}
                 </option>
               ))}
+            </select>
+          </>
+        )}
+
+        {isAdmin && (
+          <>
+            {/* Role */}
+            <select
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              className="w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="staff">Staff</option>
+              <option value="doctor">Doctor</option>
+              <option value="admin">Admin</option>
             </select>
 
             {/* Active */}

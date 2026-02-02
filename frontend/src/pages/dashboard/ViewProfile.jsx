@@ -8,8 +8,7 @@ const ViewProfile = () => {
   const [isModalOpen, setIsModalOpen] = useState();
   const [profile, setProfile] = useState(null);
 
-  useEffect(() => {
-    const fetchProfile = async () => {
+  const fetchProfile = async () => {
       if(!user) return;
       const response = await fetch(
         `http://localhost:5555/users/${user.user.id}`,
@@ -18,10 +17,12 @@ const ViewProfile = () => {
         },
       );
       const json = await response.json();
-      
+
       if (response.ok) setProfile(json);
     };
     console.log("Fetching profile...", profile);
+
+  useEffect(() => {
     fetchProfile();
   }, [user]);
 
@@ -73,10 +74,7 @@ const ViewProfile = () => {
           <ProfileForm
             profile={profile}
             onClose={() => setIsModalOpen(false)}
-            onSuccess={(updatedUser) => {
-              setProfile(updatedUser);
-              setUser(updatedUser);
-            }}
+            onSuccess={fetchProfile}
           />
         </Modal>
       )}

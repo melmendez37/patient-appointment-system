@@ -111,7 +111,7 @@ export const getUserById = async (req, res) => {
 export const updateUserById = async (req, res) => {
   try {
     const { id } = req.params;
-    const { role, id: userId } = req.user;
+    const { role } = req.user;
 
     let updateData = {};
 
@@ -185,7 +185,7 @@ export const updateUserById = async (req, res) => {
       .status(200)
       .send({ message: "User updated successfully", user: updatedUser });
   } catch (error) {
-    res.status(500).send({ message: "Error updating user", error });
+    res.status(500).send({ message: "Error updating user", error: error.message });
   }
 };
 
