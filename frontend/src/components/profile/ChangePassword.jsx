@@ -1,41 +1,61 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import {useAuthContext} from "../../hooks/useAuthContext";
 
 const ChangePassword = ({onClose}) => {
-    const [currentPassword, setCurrentPassword] = useState('');
-    const [newPassword, setNewPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
   
     const {user} = useAuthContext();
 
+    const [formData, setFormData] = useState({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+    });
+
+    const handleChange = (e) => {
+        setFormData((prev) => ({
+        ...prev,
+        [e.target.name]: e.target.value,
+        }));
+    };
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (newPassword !== confirmPassword) {
-            setError("New password and confirm password do not match.");
-            return;
-        }
         setLoading(true);
         setError(null);
 
+        const { currentPassword, newPassword, confirmPassword } = formData;
+
+        if (newPassword !== confirmPassword) {
+            setError("New password and confirm password do not match.");
+            setLoading(false);
+            return;
+        }
+
         try {
-            const response = await fetch(`http://localhost:5555/users/${user.user.id}/change-password`, {
-                method: 'POST',
+            const payload = {
+                currentPassword: formData.currentPassword,
+                newPassword: formData.newPassword,
+                confirmPassword: formData.confirmPassword,
+            };
+
+            
+            const res = await fetch(`http://localhost:5555/users/${user.user.id}/password`, {
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${user.token}`,
                 },
-                body: JSON.stringify({
-                    currentPassword,
-                    newPassword,
-                }),
+                body: JSON.stringify(payload),
             });
+            const json = await res.json();
 
-            const json = await response.json();
+            console.log(json.message);
 
-            if (!response.ok) {
-                setError(json.error || 'Failed to change password.');
+            if (!res.ok) {
+                setError(json.message || 'Failed to change password.');
             } else {
                 onClose();
             }
@@ -54,9 +74,10 @@ const ChangePassword = ({onClose}) => {
                     <input
                         type="password"
                         id="currentPassword"
-                        value={currentPassword}
+                        name='currentPassword'
+                        value={formData.currentPassword}
                         placeholder='Current password'
-                        onChange={(e) => setCurrentPassword(e.target.value)}
+                        onChange={handleChange}
                         className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                     />
                 </div>
@@ -64,9 +85,10 @@ const ChangePassword = ({onClose}) => {
                     <input
                         type="password"
                         id="newPassword"
-                        value={newPassword}
+                        name='newPassword'
+                        value={formData.newPassword}
                         placeholder='New password'
-                        onChange={(e) => setNewPassword(e.target.value)}
+                        onChange={handleChange}
                         className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                     />
                 </div>
@@ -74,9 +96,10 @@ const ChangePassword = ({onClose}) => {
                     <input
                         type="password"
                         id="confirmPassword"
-                        value={confirmPassword}
+                        name='confirmPassword'
+                        value={formData.confirmPassword}
                         placeholder='Confirm new password'
-                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        onChange={handleChange}
                         className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                     />
                 </div>

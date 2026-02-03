@@ -9,6 +9,7 @@ import {
   getDoctors,
   getUserById,
   updateUserById,
+  changePassword
 } from "../controllers/protected/userController.js";
 
 const router = express.Router();
@@ -42,6 +43,13 @@ router.put(
   authMiddleware,
   authorizeRoles("admin", "staff", "doctor"),
   updateUserById
+);
+
+router.put(
+  "/:id/password",
+  authMiddleware,
+  authorizeRoles("admin", "staff", "doctor"),
+  changePassword
 );
 
 router.delete("/:id", authMiddleware, authorizeRoles("admin"), deleteUserById);

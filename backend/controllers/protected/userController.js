@@ -189,6 +189,44 @@ export const updateUserById = async (req, res) => {
   }
 };
 
+export const changePassword = async (req, res) => {
+  console.log(req.body)
+  try {
+    const { id } = req.params;
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+
+    if (req.user.id !== id) {
+      return res.status(403).json({ message: "Cannot change other users' passwords" });
+    }
+
+    if(newPassword !== confirmPassword){
+      return res.status(400).json({ message: "Passwords do not match." });
+    }
+
+    if(newPassword.length < 8){
+      return res.status(400).json({ message: "New password must be at least 8 characters long." });
+    }
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Current password is incorrect." });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({ message: "Password changed successfully." });
+  } catch (error) {
+    res.status(500).json({ message: "Error changing password", error: error.message });
+  }
+};
+
 export const deleteUserById = async (req, res) => {
   try {
     const { id } = req.params;
