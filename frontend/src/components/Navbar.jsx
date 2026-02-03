@@ -26,7 +26,8 @@ const Navbar = () => {
                         </div>
                     )}
                     {!user && (
-                        <div>
+                        <div className='flex justify-around gap-4'>
+                            <Link to="/public">Public</Link>
                             <Link to="/login">Login</Link>
                         </div>
                     )}

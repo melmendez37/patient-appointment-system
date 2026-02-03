@@ -15,7 +15,7 @@ app.use("/users", userRouter);
 app.use("/appointments", appointmentRouter);
 app.use("/schedules", availabilityRouter);
 app.use("/auth", authRoute);
-app.use("/public/appointments", publicRoute);
+app.use("/public", publicRoute);
 
 const port = process.env.PORT;
 const db = process.env.MONGODB_URL;

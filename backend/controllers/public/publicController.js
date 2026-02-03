@@ -131,9 +131,9 @@ export const getAppointmentById = async (req, res) => {
   }
 };
 
-export const viewAppointmentByEmail = async (req, res) => {
+export const verifyAppointmentAccess = async (req, res) => {
     try {
-        const { email, ref } = req.query;
+        const { email, ref } = req.body;
         const appointment = await Appointment.findOne({
             patientEmail: email,
             referenceNumber: ref.toUpperCase(),
