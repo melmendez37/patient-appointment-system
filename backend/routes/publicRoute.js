@@ -1,6 +1,7 @@
 import express from "express";
 import { validateFields } from "../middleware/validateFields.js";
-import { createAppointment, verifyAppointmentAccess, getAppointments, updateAppointmentById } from "../controllers/public/publicController.js";
+import { createAppointment, verifyAppointmentAccess, getAppointmentById, updateAppointmentById } from "../controllers/public/publicController.js";
+import { requirePublicAppointmentToken } from "../middleware/requirePublicAppointmentToken.js";
 
 const router = express.Router();
 
@@ -16,6 +17,8 @@ router.post(
   ]),
   createAppointment
 );
+
+router.get("/appointments/:id", requirePublicAppointmentToken, getAppointmentById);
 
 //Fetch appointment by verifying email address and reference
 router.post("/verify", verifyAppointmentAccess);

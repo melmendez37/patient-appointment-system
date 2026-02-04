@@ -6,6 +6,7 @@ import ViewAppointments from "./pages/dashboard/ViewAppointments.jsx";
 import ViewSchedules from "./pages/dashboard/ViewSchedules.jsx";
 import ViewProfile from "./pages/dashboard/ViewProfile.jsx";
 import ViewUsers from "./pages/dashboard/ViewUsers.jsx";
+import ViewAppointmentDetails from "./components/public/ViewAppointmentDetails.jsx";
 import "react-datepicker/dist/react-datepicker.css";
 import { useAuthContext } from "./hooks/useAuthContext.jsx";
 
@@ -22,6 +23,7 @@ const App = () => {
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/public/appointments/:id" element={<ViewAppointmentDetails />} />
       <Route
         path="/dashboard"
         element={

@@ -3,6 +3,7 @@ import { Appointment } from "../../models/appointmentModel.js";
 import { sendAppointmentEmail } from "../../utils/emailService.js";
 import { Availability } from "../../models/availabilityModel.js";
 import { generateAvailableSlots } from "../../utils/generateAvailableSlots.js";
+import jwt from "jsonwebtoken";
 
 export const createAppointment = async (req, res) => {
     try {
@@ -119,7 +120,7 @@ export const getAppointmentById = async (req, res) => {
   try {
     //change logic to verify email address and reference number
     const { id } = req.params;
-    const appointment = await Appointment.findById(id);
+    const appointment = await Appointment.findById(id).populate("doctor", "name email");
 
     if (!appointment) {
       res.status(404).send({ message: "Appointment not found" });
@@ -130,6 +131,17 @@ export const getAppointmentById = async (req, res) => {
     res.status(500).send({ message: "Error fetching appointment", error });
   }
 };
+
+const generateAppointmentToken = (appointment) => {
+  return jwt.sign(
+    {
+      id: appointment._id,
+      scope: "apppointment:public",
+      referenceNumber: appointment.referenceNumber,
+},
+process.env.JWT_SECRET,
+{ expiresIn: "15m" }
+)};
 
 export const verifyAppointmentAccess = async (req, res) => {
     try {
@@ -143,7 +155,12 @@ export const verifyAppointmentAccess = async (req, res) => {
             return res.status(404).send({ message: "Appointment not found" });
         }
 
-        res.status(200).send(appointment);
+        const token = generateAppointmentToken(appointment);
+        
+        res.status(200).send({
+          appointment,
+          token,
+        });
     } catch (error) {
         res.status(500).send({ message: "Error fetching appointment", error });
     }

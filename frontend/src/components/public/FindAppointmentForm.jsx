@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import { useAuthContext } from "../../hooks/useAuthContext";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const FindAppointmentForm = (onClose) => {
+const FindAppointmentForm = ({onClose}) => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     ref: "",
@@ -39,13 +40,17 @@ const FindAppointmentForm = (onClose) => {
       const json = await res.json();
 
       if (!res.ok) {
-        throw new Error(json.message || "Something went wrong. Try again later.");
-      } else {
-        console.log("Appointment found:", json);
+        throw new Error(json.message);
       }
 
+      sessionStorage.setItem('appointmentToken', json.token);
+
+      console.log("Token", sessionStorage);
+      navigate(`/public/appointments/${json.appointment._id}`);
+
     } catch (err) {
-      setError("Failed to find appointment. Please check your details and try again.");
+      setError(`Failed to find appointment. Please check your details and try again.`);
+      console.error("Error finding appointment:", err.message);
     } finally {
       setIsLoading(false);
     }
