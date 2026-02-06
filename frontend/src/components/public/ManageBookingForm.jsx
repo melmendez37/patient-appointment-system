@@ -87,10 +87,9 @@ const ManageBookingForm = (onClose) => {
           throw new Error(json.message);
         }
         setAppointment(json);
-        //navigate(-1);
+        navigate(-1);
       } catch (error) {
         setError("ERROR: " + error.message);
-        console.log("Error updating appointment:", error);
       } finally {
         setIsLoading(false);
       }
