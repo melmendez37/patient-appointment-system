@@ -1,31 +1,147 @@
-import React from 'react'
+import React, {use, useEffect, useState} from 'react'
+import { useParams, useNavigate } from 'react-router-dom';
 
 const ManageBookingForm = (onClose) => {
+  const {id} = useParams();
+  const navigate = useNavigate();
+
+  const [appointment, setAppointment] = useState(null);
+  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedTime, setSelectedTime] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const token = sessionStorage.getItem("appointmentToken");
+
+  //appointment
+  useEffect(() => {
+    const fetchAppointment = async () => {
+      if(!token){
+        setError("No access token found. Please verify your appointment first.");
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const res = await fetch(
+          `http://localhost:5555/public/appointments/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
+        const json = await res.json();
+
+        if (!res.ok) {
+          throw new Error(json.message);
+        }
+        setAppointment(json);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAppointment();
+  }, [id, token]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+
+      if(!token){
+        setError("No access token found. Please verify your appointment first.");
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const dateObj = new Date(appointment.startTime);
+        const [hours, minutes] = selectedTime.split(":").map(Number);
+
+        dateObj.setHours(hours);
+        dateObj.setMinutes(minutes);
+        dateObj.setSeconds(0);
+        dateObj.setMilliseconds(0);
+
+        const payload = {
+          startTime: dateObj.toISOString(),
+        };
+        
+        const res = await fetch(`http://localhost:5555/public/update/${id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        });
+
+        const json = await res.json();
+
+        if (!res.ok) {
+          throw new Error(json.message);
+        }
+        setAppointment(json);
+        //navigate(-1);
+      } catch (error) {
+        setError("ERROR: " + error.message);
+        console.log("Error updating appointment:", error);
+      } finally {
+        setIsLoading(false);
+      }
+  };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return (
+      <div>
+        <p>{error}</p>
+        <button onClick={() => navigate(-1)}>Go Back</button>
+      </div>
+    );
+  }
+
+  if (!appointment) {
+    return (
+      <div>
+        <p>Appointment not found.</p>
+        <button onClick={() => navigate(-1)}>Go Back</button>
+      </div>
+    );
+  }
+  
   return (
-    <div className="bg-white rounded-xl p-6 w-full max-w-lg shadow-lg">
-      <h2 className="text-lg">Find Appointment</h2>
+    <div>
+      <h2>Edit Appointment Time</h2>
+      <p className="capitalize">Status: {appointment?.status}</p>
+      <p>Doctor: {appointment?.doctor?.name}</p>
+      <p>Reference: {appointment?.referenceNumber}</p>   
+      <form onSubmit={handleSubmit}>
+        <label>
+          Time:
+          <input
+            type="time"
+            value={selectedTime}
+            onChange={(e) => setSelectedTime(e.target.value)}
+            required
+          />
+        </label>
+        <br />
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? "Updating..." : "Update Time"}
+        </button>
+      </form>
+         
 
-      <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
-                    <label className='text-xl font-semibold' htmlFor="">Email</label>
-                    <input 
-                        type="email" 
-                        onChange={(e) => setEmail(e.target.value)} 
-                        value={email}
-                        className='bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400'
-                        placeholder='example@gmail.com'
-                    />
-
-                    <label className='text-xl font-semibold' htmlFor="">Password</label>
-                    <input 
-                        type="password" 
-                        onChange={(e) => setPassword(e.target.value)} 
-                        value={password}
-                        className='bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400'
-                        placeholder='******'
-                    />
-                    <button disabled={isLoading} className='bg-blue-500 text-white p-3 rounded hover:bg-blue-600 transition mt-8'>Sign Up</button>
-                    {error && <div className='text-red-500 font-semibold text-center'>{error}</div>}
-                </form>
+      <button onClick={() => navigate(-1)}>Go Back</button>
     </div>
   )
 }

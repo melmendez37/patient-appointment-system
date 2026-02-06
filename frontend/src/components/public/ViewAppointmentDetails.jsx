@@ -75,8 +75,7 @@ const ViewAppointmentDetails = () => {
       <p className="capitalize">Status: {appointment?.status}</p>
       <p>Doctor: {appointment?.doctor?.name}</p>
       <p>
-        Date:{" "}
-        {new Date(appointment.date).toLocaleString("en-PH", {
+        {new Date(appointment.startTime).toLocaleString("en-PH", {
           weekday: "long",
           year: "numeric",
           month: "long",

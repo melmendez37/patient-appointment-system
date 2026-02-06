@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const FindAppointmentForm = ({onClose}) => {
+const FindAppointmentForm = ({ modalType, onClose }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
@@ -46,7 +46,11 @@ const FindAppointmentForm = ({onClose}) => {
       sessionStorage.setItem('appointmentToken', json.token);
 
       console.log("Token", sessionStorage);
-      navigate(`/public/appointments/${json.appointment._id}`);
+      if(modalType === "view"){
+        navigate(`/public/appointments/${json.appointment._id}`);
+      } else if(modalType === "manage"){
+        navigate(`/public/manage/${json.appointment._id}`);
+      }
 
     } catch (err) {
       setError(`Failed to find appointment. Please check your details and try again.`);
@@ -58,7 +62,7 @@ const FindAppointmentForm = ({onClose}) => {
 
   return (
     <div className="bg-white rounded-xl p-6 w-full max-w-lg shadow-lg">
-      <h2 className="text-lg font-semibold mb-4">Find Appointment</h2>
+      <h2 className="text-lg font-semibold mb-4">{modalType === "view" ? "Find" : "Manage"} Appointment</h2>
 
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <input
@@ -82,7 +86,7 @@ const FindAppointmentForm = ({onClose}) => {
           disabled={isLoading}
           className="bg-blue-500 text-white p-3 rounded hover:bg-blue-600 transition mt-4"
         >
-          Find Appointment
+          {modalType === "view" ? "Find" : "Manage"} Appointment
         </button>
         {error && (
           <div className="text-red-500 font-semibold text-center">{error}</div>
