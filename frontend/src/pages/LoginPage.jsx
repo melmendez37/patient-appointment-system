@@ -17,28 +17,26 @@ const LoginPage = () => {
   return (
     <div className='min-h-screen flex flex-col'>
        <Navbar/>
-        <div className="flex flex-1 justify-center items-center">
-            <div className='bg-gray-300 p-8 rounded-lg shadow-lg w-full max-w-md'>
-                <h3 className='text-4xl font-bold mb-6 text-center'>Log In.</h3>
+        <div className="flex flex-1 justify-center items-center bg-gray-200">
+            <div className='bg-white rounded-xl p-8 shadow-lg w-full max-w-md'>
+                <h3 className='text-2xl font-bold mb-6 text-left'>Log In.</h3>
                 <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
-                    <label className='text-xl font-semibold' htmlFor="">Email</label>
                     <input 
                         type="email" 
                         onChange={(e) => setEmail(e.target.value)} 
                         value={email}
-                        className='bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400'
-                        placeholder='example@gmail.com'
+                        className="w-full text-gray-700 bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        placeholder='Email address'
                     />
 
-                    <label className='text-xl font-semibold' htmlFor="">Password</label>
                     <input 
                         type="password" 
                         onChange={(e) => setPassword(e.target.value)} 
                         value={password}
-                        className='bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400'
-                        placeholder='******'
+                        className="w-full text-gray-700 bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        placeholder='Password'
                     />
-                    <button disabled={isLoading} className='bg-blue-500 text-white p-3 rounded hover:bg-blue-600 transition mt-8'>Sign Up</button>
+                    <button disabled={isLoading} className='bg-blue-500 text-white p-3 rounded hover:bg-blue-600 transition mt-4'>Log In</button>
                     {error && <div className='text-red-500 font-semibold text-center'>{error}</div>}
                 </form>
             </div>

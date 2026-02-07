@@ -10,7 +10,7 @@ const AppointmentRow = ({
   return (
     <div
       key={appointment._id}
-      className="grid grid-cols-5 items-center gap-2 mb-8"
+      className="grid grid-cols-4 items-center gap-2 mb-6"
     >
       <div className="font-semibold text-gray-900">
         {appointment.patientName}

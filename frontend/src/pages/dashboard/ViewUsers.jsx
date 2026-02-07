@@ -30,8 +30,8 @@ const ViewUsers = () => {
   };
 
   return (
-    <div className="flex-1 p-6 bg-white">
-      <div className="flex justify-between items-center mb-8">
+    <div>
+      <div className="flex justify-between items-start p-2">
         <h1 className="text-2xl font-bold mb-6 text-gray-900">Users</h1>
         <button
           className="px-4 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition"
@@ -44,7 +44,7 @@ const ViewUsers = () => {
         </button>
       </div>
 
-    <div className="grid grid-cols-5 gap-2 mb-6 text-sm items-center font-semibold text-gray-500">
+    <div className="grid grid-cols-4 gap-2 mb-6 text-sm items-center font-semibold text-gray-500">
         <div>User</div>
         <div>Role</div>
         <div>isActive</div>

@@ -18,19 +18,16 @@ const AvailabilityRow = ({availabilities, canManage, onEdit}) => {
   return (
     <div
       key={availabilities._id}
-      className="grid grid-cols-5 items-center gap-2 mb-8"
+      className="grid grid-cols-4 items-center gap-2 mb-8"
     >
       <div className="font-semibold text-gray-900">
         {availabilities.doctor?.name}
       </div>
       <div className="w-40">
+        <span className="block text-sm font-medium text-gray-900">{formatDays(availabilities.dayOfWeek)}</span>
         <span className="text-xs text-gray-500">
           {formatTime(availabilities.startTime)} - {formatTime(availabilities.endTime)}
         </span>
-      </div>
-
-      <div className="text-sm text-gray-700">
-        {formatDays(availabilities.dayOfWeek)}
       </div>
 
       <div className="flex justify-between items-center gap-4">

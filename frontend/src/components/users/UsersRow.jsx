@@ -1,6 +1,6 @@
 const UsersRow = ({ user, canManage, onEdit }) => {
   return (
-    <div key={user._id} className="grid grid-cols-5 items-center gap-2 mb-8">
+    <div key={user._id} className="grid grid-cols-4 items-center gap-2 mb-8">
       <div className="w-40">
         <span className="block text-sm font-semibold text-gray-900">
           {user.name}

@@ -12,25 +12,25 @@ const HomePage = () => {
       <div>
         <Navbar />
       </div>
-      <div className="flex justify-center gap-4">
+      <div className="flex flex-col gap-3 w-full max-w-md mx-auto">
         <button
           onClick={() => setModalType("add")}
           className="bg-orange-500 text-white p-2 rounded"
-        >
-          Add Appointment
-        </button>
-        <button
-          onClick={() => setModalType("view")}
-          className="bg-blue-500 text-white p-2 rounded"
-        >
-          Find Appointment
-        </button>
-        <button
-          onClick={() => setModalType("manage")}
-          className="bg-green-500 text-white p-2 rounded"
-        >
-          Manage Booking
-        </button>
+          >
+            Create Appointment
+          </button>
+          <button
+            onClick={() => setModalType("view")}
+            className="bg-blue-500 text-white p-2 rounded"
+          >
+            Find Appointment
+          </button>
+          <button
+            onClick={() => setModalType("manage")}
+            className="bg-green-500 text-white p-2 rounded"
+          >
+            Manage Booking
+          </button>
       </div>
 
       {modalType && (

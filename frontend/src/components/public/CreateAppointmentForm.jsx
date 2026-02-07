@@ -158,52 +158,46 @@ const CreateAppointmentForm = () => {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium mb-1">Patient Name</label>
           <input
             type="text"
             name="patientName"
             value={formData.patientName}
             onChange={handleChange}
             required
-            className="w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Full name"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">
-            Patient Email
-          </label>
           <input
             type="email"
             name="patientEmail"
             value={formData.patientEmail}
             onChange={handleChange}
             required
-            className="w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Email address"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">
-            Patient Phone
-          </label>
           <input
             type="text"
             name="patientPhone"
             value={formData.patientPhone}
             onChange={handleChange}
             required
-            className="w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Phone number"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Doctor</label>
-
           <select
             value={formData.doctor}
             onChange={handleChange}
             name="doctor"
             required
-            className="w-full border rounded-lg px-3 py-2 text-sm"
+            className="w-full text-gray-700 bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
           >
             <option value="">Select a doctor</option>
 
@@ -217,17 +211,16 @@ const CreateAppointmentForm = () => {
 
         {/* Date Dropdown */}
         <div>
-          <label className="block text-sm font-medium mb-1">Date</label>
           <select
             value={formData.selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
             name="selectedDate"
-            className="w-full border rounded-lg px-3 py-2 text-sm"
+            className={`w-full text-gray-700 bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none transition ${!formData.doctor ? 'opacity-50 cursor-not-allowed' : ''}`}
             required
             disabled={!formData.doctor}
           >
             <option value="">
-              {!formData.doctor ? "Select a doctor first" : "Select a date"}
+              Date
             </option>
             {Array.isArray(availableDays) &&
               availableDays.map((day) => (
@@ -239,19 +232,16 @@ const CreateAppointmentForm = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Time</label>
           <select
             value={selectedTime}
             onChange={(e) => setSelectedTime(e.target.value)}
             name="selectedTime"
             required
             disabled={!formData.doctor || !selectedDate}
-            className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={`w-full text-gray-700 bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none transition ${!formData.doctor ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             <option value="">
-              {!formData.doctor || !selectedDate
-                ? "Select a doctor and date first"
-                : "Select a time"}
+              Time
             </option>
             {availableSlots.map((slot) => (
               <option key={slot} value={slot}>

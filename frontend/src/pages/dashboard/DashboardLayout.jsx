@@ -1,5 +1,4 @@
 import Navbar from "../../components/Navbar";
-import Sidebar from "../../components/Sidebar";
 import { Outlet } from "react-router-dom";
 import { useAuthContext } from "../../hooks/useAuthContext";
 
@@ -7,10 +6,9 @@ const DashboardLayout = () => {
   const {user} = useAuthContext();
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gray-300">
       <Navbar />
-      {user && (<div className="flex min-h-screen gap-6">
-        <Sidebar />
+      {user && (<div className="flex min-h-screen gap-6 p-6">
         <Outlet/>
       </div>)}
     </div>
