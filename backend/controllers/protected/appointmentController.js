@@ -3,6 +3,7 @@ import { Appointment } from "../../models/appointmentModel.js";
 import { Availability } from "../../models/availabilityModel.js";
 import { sendAppointmentEmail } from "../../utils/emailService.js";
 import { generateAvailableSlots } from "../../utils/generateAvailableSlots.js";
+import { getOrSetCache } from "../../utils/getOrSetCache.js";
 
 export const createAppointment = async (req, res) => {
   try {
@@ -15,12 +16,12 @@ export const createAppointment = async (req, res) => {
       return res.status(400).send({ message: "Doctor ID invalid" });
     }
 
-    if(req.user.role === "staff"){
+    if (req.user.role === "staff") {
       const assignedDoctors = req.user.doctors.map((id) => id.toString());
-      if(!assignedDoctors.includes(req.body.doctor)){
+      if (!assignedDoctors.includes(req.body.doctor)) {
         return res.status(403).send({
-        message: "You can only create appointments for your assigned doctors",
-      });
+          message: "You can only create appointments for your assigned doctors",
+        });
       }
     }
 
@@ -55,7 +56,7 @@ export const createAppointment = async (req, res) => {
       targetDate,
       availability.startTime,
       availability.endTime,
-      bookedAppointments
+      bookedAppointments,
     );
 
     //check if requested startTime is in availableSlots
@@ -79,7 +80,10 @@ export const createAppointment = async (req, res) => {
     });
 
     const appointment = await Appointment.create(newAppointment);
-    appointment.referenceNumber = appointment._id.toString().slice(-6).toUpperCase();
+    appointment.referenceNumber = appointment._id
+      .toString()
+      .slice(-6)
+      .toUpperCase();
 
     await appointment.save();
 
@@ -107,9 +111,16 @@ export const getAllAppointments = async (req, res) => {
     if (req.user.role === "doctor") {
       filter.doctor = req.user.id;
     } else if (req.user.role === "staff") {
-      filter.doctor = {$in: req.user.doctors};
+      filter.doctor = { $in: req.user.doctors };
     }
-    const appointments = await Appointment.find(filter).populate("doctor", "name");
+
+    //fetch data from cache/db for fast response time
+    const appointments = await getOrSetCache(
+      `appointments:list:${req.user.id}:${req.user.role}`,
+      async () => {
+        return Appointment.find(filter).populate("doctor", "name");
+      },
+    );
 
     return res.status(200).json({
       role: req.user.role,
@@ -117,24 +128,31 @@ export const getAllAppointments = async (req, res) => {
       data: appointments,
     });
   } catch (error) {
-    res.status(500).send({ message: "Error fetching appointments", error });
+    res
+      .status(500)
+      .send({ message: "Error fetching appointments", error: error.message });
   }
 };
 
 export const getAppointmentById = async (req, res) => {
-  console.log(req.user.doctors)
   try {
     const { id } = req.params;
     const { role, id: userId, doctors } = req.user;
     let filter = { _id: id };
 
     if (role === "doctor") {
-      filter.doctor = {$in: [userId]};
+      filter.doctor = { $in: [userId] };
     } else if (role === "staff") {
-      filter.doctor = {$in: doctors.map(String)};
+      filter.doctor = { $in: doctors.map(String) };
     }
 
-    const appointment = await Appointment.findOne(filter);
+    //fetch data from cache/db for fast response time
+    const appointment = await getOrSetCache(
+      `appointments:detail:${id}`,
+      async () => {
+        return Appointment.findOne(filter);
+      },
+    );
 
     if (!appointment) {
       res.status(404).send({ message: "Appointment not found" });
@@ -153,9 +171,9 @@ export const updateAppointmentById = async (req, res) => {
     let filter = { _id: id };
 
     if (role === "doctor") {
-      filter.doctor = {$in: [userId]};
+      filter.doctor = { $in: [userId] };
     } else if (role === "staff") {
-      filter.doctor = {$in: doctors.map(String)};
+      filter.doctor = { $in: doctors.map(String) };
     }
 
     let updateData = {};
@@ -182,11 +200,10 @@ export const updateAppointmentById = async (req, res) => {
 
     //admin logic (optional)?
 
-    
     const updatedAppointment = await Appointment.findOneAndUpdate(
       filter,
       updateData,
-      { new: true }
+      { new: true },
     );
 
     if (!updatedAppointment) {
@@ -214,7 +231,7 @@ export const deleteAppointmentById = async (req, res) => {
         isDeleted: true,
         deletedAt: Date().now(),
       },
-      { new: true }
+      { new: true },
     );
 
     if (!deletedAppointment) {

@@ -36,7 +36,7 @@ router.get(
 router.get(
   "/:id",
   authMiddleware,
-  authorizeRoles("staff", "doctor"),
+  authorizeRoles("staff", "doctor", "admin"),
   getAppointmentById
 );
 

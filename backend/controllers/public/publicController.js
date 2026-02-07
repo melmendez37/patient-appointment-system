@@ -4,6 +4,7 @@ import { sendAppointmentEmail } from "../../utils/emailService.js";
 import { Availability } from "../../models/availabilityModel.js";
 import { generatePublicAvailableSlots } from "../../utils/generatePublicAvailableSlots.js";
 import jwt from "jsonwebtoken";
+import { getOrSetCache } from "../../utils/getOrSetCache.js";
 
 export const createAppointment = async (req, res) => {
     try {
@@ -175,11 +176,13 @@ export const updateAppointmentById = async (req, res) => {
 
 export const getDoctors = async (req, res) => {
   try {
-    const doctors = await User.find({ role: "doctor"}).select("_id name");
-
-    res.status(200).send(doctors);
+    const doctors = await getOrSetCache("doctors", async () => {
+      return User.find({ role: "doctor"}).select("_id name");
+    })
+    return res.status(200).send(doctors);
   } catch (error) {
-    res.status(500).send({ message: "Error fetching doctors", error });
+    res.status(500).send({ message: "Error fetching doctors", error: error.message });
+    console.log(error)
   }
 };
 

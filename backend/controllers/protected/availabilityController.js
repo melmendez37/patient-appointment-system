@@ -2,6 +2,7 @@ import { User } from "../../models/userModel.js";
 import { Availability } from "../../models/availabilityModel.js";
 import { Appointment } from "../../models/appointmentModel.js";
 import { generateAvailableSlots } from "../../utils/generateAvailableSlots.js";
+import { getOrSetCache } from "../../utils/getOrSetCache.js";
 
 export const addAvailability = async (req, res) => {
   console.log(req.user)
@@ -51,8 +52,13 @@ export const getAvailabilities = async (req, res) => {
     } else if (req.user.role === "staff") {
       filter.doctor = req.user.doctors;
     }
-
-    const availabilities = await Availability.find(filter).populate("doctor", "name");
+    
+    const availabilities = await getOrSetCache(
+      `availabilities:list:${req.user.id}:${req.user.role}`,
+      async () => {
+        return Availability.find(filter).populate("doctor", "name");
+      }
+    );
 
     return res.status(200).json({
       count: availabilities.length,
@@ -75,7 +81,12 @@ export const getAvailabilityById = async (req, res) => {
       filter.doctor = {$in: doctors.map(String)};
     }
 
-    const availability = await Availability.findOne(filter);
+    const availability = await getOrSetCache(
+      `availability:detail:${id}`,
+      async () => {
+        return Availability.findOne(filter);
+      }
+    );
 
     if (!availability) {
       res.status(404).send({ message: "Schedule not found" });
