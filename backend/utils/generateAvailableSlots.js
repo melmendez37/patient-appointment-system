@@ -3,6 +3,7 @@ export const generateAvailableSlots = (
   startTime,
   endTime,
   bookedAppointments,
+  excludeAppointmentId = null,
 ) => {
   const targetDate = new Date(date);
   //generate 30min slots between startTime and endTime
@@ -36,7 +37,7 @@ export const generateAvailableSlots = (
   }
 
   const bookedSlots = bookedAppointments
-  .filter(app => app._id !== appointment.id).map((app) => app.startTime.getTime());
+  .filter(app => app._id.toString() !== excludeAppointmentId).map((app) => app.startTime.getTime());
 
   //filter out booked slots
   return slots.filter((slot) => !bookedSlots.includes(slot.getTime()));

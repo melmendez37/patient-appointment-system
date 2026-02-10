@@ -4,6 +4,7 @@ import { Availability } from "../../models/availabilityModel.js";
 import { sendAppointmentEmail } from "../../utils/emailService.js";
 import { generateAvailableSlots } from "../../utils/generateAvailableSlots.js";
 import { getOrSetCache } from "../../utils/getOrSetCache.js";
+import { clearCache } from "../../utils/clearCache.js";
 
 export const createAppointment = async (req, res) => {
   try {
@@ -87,6 +88,11 @@ export const createAppointment = async (req, res) => {
 
     await appointment.save();
 
+    await clearCache([
+      `appointments:list:${req.user.id}:${req.user.role}`,
+    ]);
+    
+
     //using Nodemailer to send email notification to patient; testing through Gmail + Mailgen
     sendAppointmentEmail({
       patientName: appointment.patientName,
@@ -101,6 +107,7 @@ export const createAppointment = async (req, res) => {
     res.status(201).send(appointment);
   } catch (error) {
     res.status(500).send({ message: "Error creating user", error });
+    console.log(error.message)
   }
 };
 
