@@ -5,6 +5,8 @@ const AppointmentForm = ({
   appointment = null,
   onClose,
   onSuccess,
+  isStaff,
+  isDoctor,
   setEditingAppointment,
 }) => {
   const { user } = useAuthContext();
@@ -233,7 +235,9 @@ const AppointmentForm = ({
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
+        {!isDoctor && (
+          <>
+            <div>
           <input
             type="text"
             name="patientName"
@@ -329,6 +333,19 @@ const AppointmentForm = ({
         </div>
 
         <div>
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={isWalkIn}
+              onChange={(e) => setIsWalkIn(e.target.checked)}
+            />
+            Walk-in appointment?
+          </label>
+        </div>
+          </>
+        )}
+
+        <div>
           <select
             name="status"
             value={formData.status}
@@ -340,17 +357,6 @@ const AppointmentForm = ({
             <option value="cancelled">Cancelled</option>
             <option value="no-show">Did not show</option>
           </select>
-        </div>
-
-        <div>
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={isWalkIn}
-              onChange={(e) => setIsWalkIn(e.target.checked)}
-            />
-            Walk-in appointment?
-          </label>
         </div>
 
         <div className="mt-4">
@@ -367,7 +373,7 @@ const AppointmentForm = ({
             }
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
           >
-            Book Appointment
+            {isEdit ? "Update Appointment" : "Book Appointment"}
           </button>
         </div>
       </form>

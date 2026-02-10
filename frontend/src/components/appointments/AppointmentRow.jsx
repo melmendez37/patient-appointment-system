@@ -3,7 +3,7 @@ import React from "react";
 const AppointmentRow = ({
   appointment,
   canSeeDoctor,
-  canManageAppointments,
+  isStaff,
   isDoctor,
   onEdit
 }) => {
@@ -15,9 +15,11 @@ const AppointmentRow = ({
       <div className="font-semibold text-gray-900">
         {appointment.patientName}
       </div>
-      <div className="font-semibold text-gray-900">
-        {canSeeDoctor ? appointment.doctor?.name : "-"}
+      {canSeeDoctor && (
+        <div className="font-semibold text-gray-900">
+        {appointment.doctor?.name || "-"}
       </div>
+      )}
       <div className="w-40">
         <span className="block text-sm font-medium text-gray-900">
           {new Date(appointment.startTime).toLocaleDateString(undefined, {
@@ -53,27 +55,21 @@ const AppointmentRow = ({
         </span>
       </div>
 
-      {canManageAppointments && (
-        <div className="flex gap-8">
-          <button 
+      <div className="flex gap-8">
+          {(isDoctor || isStaff) && (
+            <button 
             className="text-blue-600 hover:text-blue-800 font-medium"
             onClick={() => onEdit(appointment)}
             >
             Edit
           </button>
-          <button className="text-red-600 hover:text-red-800 font-medium">
+          )}
+          {isStaff && (
+            <button className="text-red-600 hover:text-red-800 font-medium">
             Delete
           </button>
+          )}
         </div>
-      )}
-
-      {isDoctor && (
-        <div className="flex gap-3 ml-6">
-          <button className="text-blue-600 hover:text-blue-800 font-medium">
-            Update status
-          </button>
-        </div>
-      )}
     </div>
   );
 };

@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useAuthContext } from "../../hooks/useAuthContext";
 
-const AvailabilityForm = ({ availability = null, onClose, onSuccess }) => {
+const AvailabilityForm = ({ availability = null, onClose, onSuccess, isDoctor }) => {
   const { user } = useAuthContext();
-  console.log(user);
   const isEdit = Boolean(availability);
 
   const [loading, setLoading] = useState(false);
@@ -142,7 +141,9 @@ const AvailabilityForm = ({ availability = null, onClose, onSuccess }) => {
   return (
     <form action={handleSubmit} className="space-y-4">
       {/* // doctor */}
-      <div>
+
+      {!isDoctor && (
+        <div>
         <label className="block text-sm font-medium mb-1">Doctor</label>
 
         <select
@@ -161,6 +162,8 @@ const AvailabilityForm = ({ availability = null, onClose, onSuccess }) => {
         </select>
       </div>
 
+      )}
+      
       {/* // dayOfWeek */}
       <div>
         <label className="block text-sm font-medium mb-1">Days of Week</label>
@@ -212,7 +215,8 @@ const AvailabilityForm = ({ availability = null, onClose, onSuccess }) => {
       </div>
 
       {/* // isAvailable */}
-      <div>
+      {!isDoctor && (
+        <div>
         <label className="block text-sm font-medium mb-1">Availability</label>
         <select
           value={isAvailable}
@@ -223,6 +227,7 @@ const AvailabilityForm = ({ availability = null, onClose, onSuccess }) => {
           <option value="false">Not Available</option>
         </select>
       </div>
+      )}
 
       {/* // submit */}
       <button

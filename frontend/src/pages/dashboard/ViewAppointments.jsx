@@ -11,7 +11,7 @@ const ViewAppointments = () => {
 
   const role = user?.user?.role;
   const canSeeDoctor = role === "staff" || role === "admin";
-  const canManageAppointments = role === "staff" || role === "doctor";
+  const isStaff = role === "staff";
   const isDoctor = role === "doctor";
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -39,14 +39,11 @@ const ViewAppointments = () => {
     fetchAppointments();
   }, [user]);
 
-  console.log("user:", user);
-  console.log("appointments:", appointments);
-
   return (
     <div>
       <div className="flex p-2">
         <h1 className="text-2xl font-bold mb-6 text-gray-900">Appointments</h1>
-        {canManageAppointments && (
+        {isStaff && (
           <button
           className="px-4 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition"
           onClick={() => {
@@ -62,10 +59,10 @@ const ViewAppointments = () => {
 
       <div className="grid grid-cols-4 gap-2 mb-6 text-sm items-center font-semibold text-gray-500">
         <div>Patient</div>
-        <div>Doctor</div>
+        {canSeeDoctor && (<div>Doctor</div>)}
         <div>Date & Time</div>
         <div>Status</div>
-        {canManageAppointments && (<div>Actions</div>)}
+        {(isStaff || isDoctor) && (<div>Actions</div>)}
       </div>
 
       {appointments.length === 0 && (
@@ -78,7 +75,7 @@ const ViewAppointments = () => {
             key={appointment._id}
             appointment={appointment}
             canSeeDoctor={canSeeDoctor}
-            canManageAppointments={canManageAppointments}
+            isStaff={isStaff}
             isDoctor={isDoctor}
             onEdit={handleEdit}
           />
@@ -90,6 +87,8 @@ const ViewAppointments = () => {
           <AppointmentForm
             appointment={editingAppointment} // null for POST
             onClose={() => setIsModalOpen(false)}
+            isDoctor={isDoctor}
+            isStaff={isStaff}
             onSuccess={fetchAppointments}
             setEditingAppointment = {handleEdit}
           />
