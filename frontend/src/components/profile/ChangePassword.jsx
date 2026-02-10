@@ -78,7 +78,7 @@ const ChangePassword = ({onClose}) => {
                         value={formData.currentPassword}
                         placeholder='Current password'
                         onChange={handleChange}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
                     />
                 </div>
                 <div>
@@ -89,7 +89,7 @@ const ChangePassword = ({onClose}) => {
                         value={formData.newPassword}
                         placeholder='New password'
                         onChange={handleChange}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
                     />
                 </div>
                 <div>
@@ -100,7 +100,7 @@ const ChangePassword = ({onClose}) => {
                         value={formData.confirmPassword}
                         placeholder='Confirm new password'
                         onChange={handleChange}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
                     />
                 </div>
                 {error && (

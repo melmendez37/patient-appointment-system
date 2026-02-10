@@ -4,7 +4,6 @@ import { useAuthContext } from "../../hooks/useAuthContext";
 const ProfileForm = ({ profile, onClose, onSuccess }) => {
   const { user } = useAuthContext();
   const isAdmin = user.user.role === "admin";
-  const isStaff = user.user.role === "staff";
   const [setUser] = useState(null);
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -45,25 +44,10 @@ const ProfileForm = ({ profile, onClose, onSuccess }) => {
     fetchUser();
   }, [user]);
 
-  useEffect(() => {
-    if (!profile) return;
-    console.log("ProfileForm profile:", profile);
-
-    setFormData({
-      name: profile.name || "",
-      email: profile.email || "",
-      phone: profile.phone || "",
-      password: "",
-      role: profile.role || "",
-      doctors: profile.doctors || [],
-      isActive: profile.isActive ?? true,
-    });
-  }, [user]);
-
    //fetching doctors
     useEffect(() => {
+      if (!user) return;
       const fetchDoctors = async () => {
-        if (!user) return;
         try {
           const res = await fetch("http://localhost:5555/users/doctors", {
             headers: {
@@ -83,7 +67,22 @@ const ProfileForm = ({ profile, onClose, onSuccess }) => {
       };
   
       fetchDoctors();
-    }, []);
+    }, [user]);
+
+  useEffect(() => {
+    if (!profile) return;
+    console.log("ProfileForm profile:", profile);
+
+    setFormData({
+      name: profile.name || "",
+      email: profile.email || "",
+      phone: profile.phone || "",
+      password: "",
+      role: profile.role || "",
+      doctors: profile.doctors?.map(String) || [],
+      isActive: profile.isActive ?? true,
+    });
+  }, [profile]);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -153,7 +152,7 @@ const ProfileForm = ({ profile, onClose, onSuccess }) => {
             name="name"
             value={formData.name}
             onChange={handleChange}
-            className="w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>
 
@@ -163,19 +162,20 @@ const ProfileForm = ({ profile, onClose, onSuccess }) => {
             type="email"
             value={formData.email}
             onChange={handleChange}
-            className="w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
-          />
+            className="w-full bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
         </div>
         <div>
           <input
             name="phone"
             value={formData.phone}
             onChange={handleChange}
-            className="w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+
           />
         </div>
 
-        {isStaff && (
+        {isAdmin && (
           <>
             {/* Doctors */}
             <select
@@ -187,7 +187,8 @@ const ProfileForm = ({ profile, onClose, onSuccess }) => {
                   doctors: [...e.target.selectedOptions].map((o) => o.value),
                 }))
               }
-              className="w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+
             >
               {doctors.map((d) => (
                 <option key={d._id} value={d._id}>
@@ -195,11 +196,6 @@ const ProfileForm = ({ profile, onClose, onSuccess }) => {
                 </option>
               ))}
             </select>
-          </>
-        )}
-
-        {isAdmin && (
-          <>
             {/* Role */}
             <select
               name="role"

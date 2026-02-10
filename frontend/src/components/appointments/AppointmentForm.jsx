@@ -121,7 +121,6 @@ const AppointmentForm = ({
   //fetching available days
   useEffect(() => {
     if (!doctorId) return;
-
     const fetchAvailableDays = async () => {
       const res = await fetch(
         `http://localhost:5555/schedules/${doctorId}/available-days`,
@@ -235,51 +234,44 @@ const AppointmentForm = ({
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium mb-1">Patient Name</label>
           <input
             type="text"
             name="patientName"
             value={formData.patientName}
             onChange={handleChange}
             required
-            className="w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
-          />
+            className="w-full bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Full name"          />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">
-            Patient Email
-          </label>
           <input
             type="email"
             name="patientEmail"
             value={formData.patientEmail}
             onChange={handleChange}
             required
-            className="w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Email address"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">
-            Patient Phone
-          </label>
           <input
             type="text"
             name="patientPhone"
             value={formData.patientPhone}
             onChange={handleChange}
             required
-            className="w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Phone number"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Doctor</label>
-
           <select
             value={doctorId}
             onChange={(e) => setDoctorId(e.target.value)}
             required
-            className="w-full border rounded-lg px-3 py-2 text-sm"
+            className="w-full text-gray-700 bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
           >
             <option value="">Select a doctor</option>
 
@@ -293,16 +285,15 @@ const AppointmentForm = ({
 
         {/* Date Dropdown */}
         <div>
-          <label className="block text-sm font-medium mb-1">Date</label>
           <select
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
-            className="w-full border rounded-lg px-3 py-2 text-sm"
+            className={`w-full text-gray-800 bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none transition ${!formData.doctor ? 'opacity-50 cursor-not-allowed' : ''}`}
             required
             disabled={!doctorId}
           >
             <option value="">
-              {!doctorId ? "Select a doctor first" : "Select a date"}
+              Date
             </option>
             {Array.isArray(availableDays) &&
               availableDays.map((day) => (
@@ -314,18 +305,15 @@ const AppointmentForm = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Time</label>
           <select
             value={selectedTime}
             onChange={(e) => setSelectedTime(e.target.value)}
             required
             disabled={!doctorId || !selectedDate}
-            className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={`w-full text-gray-700 bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none transition ${!formData.doctor ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             <option value="">
-              {!doctorId || !selectedDate
-                ? "Select a doctor and date first"
-                : "Select a time"}
+              Time
             </option>
             {availableSlots.map((slot) => (
               <option key={slot} value={slot}>
@@ -341,12 +329,11 @@ const AppointmentForm = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Status</label>
           <select
             name="status"
             value={formData.status}
             onChange={handleChange}
-            className="w-full rounded-lg border px-3 py-2 text-sm"
+            className="w-full text-gray-700 bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none transition"
           >
             <option value="scheduled">Scheduled</option>
             <option value="completed">Completed</option>
