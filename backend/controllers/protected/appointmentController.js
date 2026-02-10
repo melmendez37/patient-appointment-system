@@ -91,7 +91,9 @@ export const createAppointment = async (req, res) => {
     await clearCache([
       `appointments:list:${req.user.id}:${req.user.role}`,
     ]);
-    
+
+    console.log(`appointments:list:${req.user.id}:${req.user.role}`,)
+
 
     //using Nodemailer to send email notification to patient; testing through Gmail + Mailgen
     sendAppointmentEmail({
@@ -213,6 +215,10 @@ export const updateAppointmentById = async (req, res) => {
       { new: true },
     );
 
+     await clearCache([
+      `appointments:list:${req.user.id}:${req.user.role}`,
+    ]);
+
     if (!updatedAppointment) {
       return res.status(404).send({ message: "Appointment not found" });
     }
@@ -240,6 +246,10 @@ export const deleteAppointmentById = async (req, res) => {
       },
       { new: true },
     );
+
+    await clearCache([
+      `appointments:list:${req.user.id}:${req.user.role}`,
+    ]);
 
     if (!deletedAppointment) {
       return res.status(404).send({ message: "Appointment not found" });

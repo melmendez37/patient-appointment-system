@@ -3,6 +3,7 @@ import { Availability } from "../../models/availabilityModel.js";
 import { Appointment } from "../../models/appointmentModel.js";
 import { generateAvailableSlots } from "../../utils/generateAvailableSlots.js";
 import { getOrSetCache } from "../../utils/getOrSetCache.js";
+import { clearCache } from "../../utils/clearCache.js";
 
 export const addAvailability = async (req, res) => {
   console.log(req.user)
@@ -35,6 +36,10 @@ export const addAvailability = async (req, res) => {
     });
 
     const availability = await Availability.create(newAvailability);
+
+    await clearCache([
+      `availabilities:list:${req.user.id}:${req.user.role}`,
+    ]);
 
     res.status(201).send(availability);
   } catch (error) {
@@ -256,6 +261,10 @@ export const updateAvailability = async (req, res) => {
       { new: true }
     );
 
+    await clearCache([
+      `availabilities:list:${req.user.id}:${req.user.role}`,
+    ]);
+
     if (!updatedAvailability) {
       return res.status(404).send({ message: "Schedule not found" });
     }
@@ -281,6 +290,10 @@ export const deleteAvailability = async (req, res) => {
       isAvailable: false,
       deletedAt: Date().now(),
     });
+
+    await clearCache([
+      `availabilities:list:${req.user.id}:${req.user.role}`,
+    ]);
 
     if (!deletedAvailability) {
       return res.status(404).send({ message: "Schedule not found" });

@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { User } from "../../models/userModel.js";
 import bcrypt from "bcrypt";
 import { getOrSetCache } from "../../utils/getOrSetCache.js";
+import { clearCache } from "../../utils/clearCache.js";
 
 export const addNewUser = async (req, res) => {
   try {
@@ -46,6 +47,8 @@ export const addNewUser = async (req, res) => {
     });
 
     const user = await User.create(newUser);
+
+    await clearCache([ `users:list` ]);
 
     res.status(201).send(user);
   } catch (error) {
@@ -200,6 +203,12 @@ export const updateUserById = async (req, res) => {
     const updatedUser = await User.findByIdAndUpdate(id, updateData, {
       new: true,
     });
+    
+    if(role === "admin") await clearCache(['users:list'])
+
+    if(role === "staff" || role === "doctor"){
+      await clearCache([`user:${id}`])
+    }
 
     if (!updatedUser) {
       return res.status(404).send({ message: "User not found" });
@@ -276,6 +285,12 @@ export const deleteUserById = async (req, res) => {
 
     if (!deletedUser) {
       return res.status(404).send({ message: "User not found" });
+    }
+
+    if(role === "admin") await clearCache(['users:list'])
+
+    if(role === "staff" || role === "doctor"){
+      await clearCache([`user:${id}`])
     }
 
     return res.status(200).send({ message: "User deleted successfully" });
