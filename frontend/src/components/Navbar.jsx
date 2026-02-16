@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { useLogout } from "../hooks/useLogout";
 import { useState } from "react";
+import { LogOut, ClipboardClock, CircleUser } from "lucide-react";
 
 const Navbar = () => {
   const { logout } = useLogout();
@@ -24,13 +25,13 @@ const Navbar = () => {
           <div className="flex gap-4 items-center ">
             {user && (
               <div className="flex justify-between gap-8">
-                <Link to="/dashboard/profile">{user.user.email}</Link>
                 <Link to="/dashboard/appointments">Appointments</Link>
                 <Link to="/dashboard/schedules">Availability</Link>
                 {user?.user.role === "admin" && (
                   <Link to="/dashboard/users">Users</Link>
                 )}
-                <button onClick={handleClick}>Log out</button>
+                <Link to="/dashboard/profile"><CircleUser/></Link>
+                <button onClick={handleClick}><LogOut/></button>
               </div>
             )}
             {!user && (

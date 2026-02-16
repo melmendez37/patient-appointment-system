@@ -1,4 +1,5 @@
 import React from "react";
+import {Pencil, Trash} from "lucide-react"
 
 const AppointmentRow = ({
   appointment,
@@ -10,7 +11,7 @@ const AppointmentRow = ({
   return (
     <div
       key={appointment._id}
-      className="grid grid-cols-4 items-center gap-2 mb-6"
+      className="grid grid-cols-5 items-center gap-2 mb-6"
     >
       <div className="font-semibold text-gray-900">
         {appointment.patientName}
@@ -61,12 +62,12 @@ const AppointmentRow = ({
             className="text-blue-600 hover:text-blue-800 font-medium"
             onClick={() => onEdit(appointment)}
             >
-            Edit
+            <Pencil/>
           </button>
           )}
           {isStaff && (
             <button className="text-red-600 hover:text-red-800 font-medium">
-            Delete
+            <Trash/>
           </button>
           )}
         </div>

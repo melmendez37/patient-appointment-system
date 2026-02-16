@@ -1,3 +1,5 @@
+import { Pencil } from "lucide-react";
+
 const UsersRow = ({ user, canManage, onEdit }) => {
   return (
     <div key={user._id} className="grid grid-cols-4 items-center gap-2 mb-8">
@@ -44,7 +46,7 @@ const UsersRow = ({ user, canManage, onEdit }) => {
             className="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
             onClick={() => onEdit(user)}
           >
-            Edit
+            <Pencil/>
           </button>
         )}
       </div>

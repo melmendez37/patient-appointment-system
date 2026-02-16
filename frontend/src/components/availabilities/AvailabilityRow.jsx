@@ -1,4 +1,5 @@
 import React from 'react'
+import {Pencil} from "lucide-react"
 
 const AvailabilityRow = ({availabilities, canManage, onEdit, isDoctor}) => {
     const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -50,7 +51,7 @@ const AvailabilityRow = ({availabilities, canManage, onEdit, isDoctor}) => {
             className="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
             onClick={() => onEdit(availabilities)}
           >
-            Edit
+            <Pencil/>
           </button>
         )}
       </div>

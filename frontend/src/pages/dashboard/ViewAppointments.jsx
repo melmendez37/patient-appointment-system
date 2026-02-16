@@ -41,7 +41,7 @@ const ViewAppointments = () => {
 
   return (
     <div>
-      <div className="flex p-2">
+      <div className="flex items-start justify-between p-2">
         <h1 className="text-2xl font-bold mb-6 text-gray-900">Appointments</h1>
         {isStaff && (
           <button
@@ -57,7 +57,7 @@ const ViewAppointments = () => {
         )}
       </div>
 
-      <div className="grid grid-cols-4 gap-2 mb-6 text-sm items-center font-semibold text-gray-500">
+      <div className="grid grid-cols-5 gap-2 mb-6 text-sm items-center font-semibold text-gray-500">
         <div>Patient</div>
         {canSeeDoctor && (<div>Doctor</div>)}
         <div>Date & Time</div>
