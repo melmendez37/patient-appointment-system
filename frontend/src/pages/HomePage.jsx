@@ -3,7 +3,7 @@ import Navbar from "../components/Navbar";
 import { useState } from "react";
 import FindAppointmentForm from "../components/public/FindAppointmentForm";
 import CreateAppointmentForm from "../components/public/CreateAppointmentForm";
-import ManageBookingForm from "../components/public/ManageBookingForm";
+import { CirclePlus, Search, ClipboardCheck } from "lucide-react";
 
 const HomePage = () => {
   const [modalType, setModalType] = useState(null);
@@ -15,21 +15,21 @@ const HomePage = () => {
       <div className="flex flex-col gap-3 w-full max-w-md mx-auto">
         <button
           onClick={() => setModalType("add")}
-          className="bg-orange-500 text-white p-2 rounded"
+          className="flex justify-center items-center gap-2 px-4 py-2 bg-orange-500 text-white p-2 rounded"
           >
-            Create Appointment
+            <CirclePlus/> Create Appointment
           </button>
           <button
             onClick={() => setModalType("view")}
-            className="bg-blue-500 text-white p-2 rounded"
+            className="flex justify-center items-center gap-2 bg-blue-800 text-white p-2 rounded"
           >
-            Find Appointment
+            <Search/> Find Appointment
           </button>
           <button
             onClick={() => setModalType("manage")}
-            className="bg-green-500 text-white p-2 rounded"
+            className="flex justify-center items-center gap-2 bg-green-800 text-white p-2 rounded"
           >
-            Manage Booking
+            <ClipboardCheck/>Manage Booking
           </button>
       </div>
 

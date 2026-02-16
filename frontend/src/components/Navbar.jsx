@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { useLogout } from "../hooks/useLogout";
 import { useState } from "react";
-import { LogOut, ClipboardClock, CircleUser } from "lucide-react";
+import { LogOut, CircleUser } from "lucide-react";
 
 const Navbar = () => {
   const { logout } = useLogout();
@@ -36,7 +36,7 @@ const Navbar = () => {
             )}
             {!user && (
               <div className="flex justify-around gap-4">
-                <Link to="/login">Login</Link>
+                <Link className="flex justify-center items-center gap-3" to="/login">Login</Link>
               </div>
             )}
           </div>
