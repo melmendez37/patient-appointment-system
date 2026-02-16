@@ -132,47 +132,46 @@ const UsersForm = ({ user, onClose, onSuccess }) => {
       </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium mb-1">Name</label>
           <input
             type="text"
             name="name"
             value={formData.name}
             onChange={handleChange}
             required
-            className="w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Full name"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Email</label>
           <input
             type="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
             required
-            className="w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Email address"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Phone</label>
           <input
             type="text"
             name="phone"
             value={formData.phone}
             onChange={handleChange}
             required
-            className="w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Phone number"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Role</label>
           <select
             name="role"
             value={formData.role}
             onChange={handleChange}
-            className="w-full rounded-lg border px-3 py-2 text-sm"
+            className="w-full bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
           >
             <option value="scheduled">Select Role</option>
             <option value="admin">Admin</option>
@@ -212,14 +211,11 @@ const UsersForm = ({ user, onClose, onSuccess }) => {
         )}
 
         <div>
-          <label className="block text-sm font-medium mb-1">
-            Active Status
-          </label>
           <select
             name="isActive"
             value={formData.isActive}
             onChange={handleChange}
-            className="w-full rounded-lg border px-3 py-2 text-sm"
+            className="w-full bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
           >
             <option value="">Select Status</option>
             <option value="true">Active</option>

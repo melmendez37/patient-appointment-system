@@ -21,53 +21,50 @@ const ProfileForm = ({ profile, onClose, onSuccess }) => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      if(!user) return;
+      if (!user) return;
       try {
-        const res = await fetch(
-          `http://localhost:5555/users/${user.user.id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${user.token}`,
-            },
-          }
-        );
+        const res = await fetch(`http://localhost:5555/users/${user.user.id}`, {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        });
         const json = await res.json();
 
-        if(res.ok){
+        if (res.ok) {
           setUser(json);
         }
       } catch (error) {
         console.log("Error fetching user:", error);
       }
-    }
+    };
 
     fetchUser();
   }, [user]);
 
-   //fetching doctors
-    useEffect(() => {
-      if (!user) return;
-      const fetchDoctors = async () => {
-        try {
-          const res = await fetch("http://localhost:5555/users/doctors", {
-            headers: {
-              Authorization: `Bearer ${user.token}`,
-            },
-          });
-          const json = await res.json();
-  
-          if (res.ok) {
-            setDoctors(json);
-          } else {
-            console.error("Error fetching doctors:", json.message);
-          }
-        } catch (error) {
-          console.error("server error.");
+  //fetching doctors
+  useEffect(() => {
+    if (!user) return;
+    const fetchDoctors = async () => {
+      try {
+        const res = await fetch("http://localhost:5555/users/doctors", {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        });
+        const json = await res.json();
+
+        if (res.ok) {
+          setDoctors(json);
+        } else {
+          console.error("Error fetching doctors:", json.message);
         }
-      };
-  
-      fetchDoctors();
-    }, [user]);
+      } catch (error) {
+        console.error("server error.");
+      }
+    };
+
+    fetchDoctors();
+  }, [user]);
 
   useEffect(() => {
     if (!profile) return;
@@ -163,7 +160,7 @@ const ProfileForm = ({ profile, onClose, onSuccess }) => {
             value={formData.email}
             onChange={handleChange}
             className="w-full bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
+          />
         </div>
         <div>
           <input
@@ -171,37 +168,42 @@ const ProfileForm = ({ profile, onClose, onSuccess }) => {
             value={formData.phone}
             onChange={handleChange}
             className="w-full bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-
           />
         </div>
 
+        <label className="block text-sm font-medium mb-2">
+          Assigned Doctors
+        </label>
+        
         {isAdmin && (
           <>
-            {/* Doctors */}
-            <select
-              multiple
-              value={formData.doctors}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  doctors: [...e.target.selectedOptions].map((o) => o.value),
-                }))
-              }
-              className="w-full bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            <div className="flex gap-2 flex-wrap">
+              {doctors.map((doctor) => {
+                const selected = formData.doctors.includes(doctor._id);
 
-            >
-              {doctors.map((d) => (
-                <option key={d._id} value={d._id}>
-                  {d.name}
-                </option>
-              ))}
-            </select>
+                return (
+                  <button
+                    key={doctor._id}
+                    type="button"
+                    onClick={() => toggleDoctor(doctor._id)}
+                    className={`px-3 py-2 rounded-lg text-sm border transition
+                ${
+                  selected
+                    ? "bg-blue-600 text-white border-blue-600"
+                    : "bg-gray-100 border-gray-300 hover:bg-gray-100"
+                }`}
+                  >
+                    {doctor.name}
+                  </button>
+                );
+              })}
+            </div>
             {/* Role */}
             <select
               name="role"
               value={formData.role}
               onChange={handleChange}
-              className="w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+              className="w-full text-gray-700 bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
             >
               <option value="staff">Staff</option>
               <option value="doctor">Doctor</option>
@@ -218,7 +220,7 @@ const ProfileForm = ({ profile, onClose, onSuccess }) => {
                   isActive: e.target.value === "true",
                 }))
               }
-              className="w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+              className="w-full text-gray-700 bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
             >
               <option value="true">Active</option>
               <option value="false">Inactive</option>

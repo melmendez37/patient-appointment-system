@@ -2,12 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 const CreateAppointmentForm = () => {
-  const { id } = useParams();
   const navigate = useNavigate();
 
   const [doctors, setDoctors] = useState([]);
-  const [doctor, setDoctor] = useState("");
-
   const [availableDays, setAvailableDays] = useState([]);
   const [selectedDate, setSelectedDate] = useState("");
   const [availableSlots, setAvailableSlots] = useState([]);

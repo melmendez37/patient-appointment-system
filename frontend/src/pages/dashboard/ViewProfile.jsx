@@ -29,7 +29,7 @@ const ViewProfile = () => {
   }, [user]);
 
   return (
-    <div className="flex-1 p-6 bg-white">
+    <div className="flex flex-col p-2">
       <h1 className="text-2xl font-bold mb-6 text-gray-900">Profile</h1>
 
       <div className="space-y-4">
@@ -60,7 +60,7 @@ const ViewProfile = () => {
       </div>
 
       {/* Optional Edit Button */}
-      <div className="flex justify-around gap-4 mt-6">
+      <div className="flex gap-4 mt-6">
         <button
           className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
           onClick={() => {

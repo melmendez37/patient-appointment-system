@@ -144,13 +144,12 @@ const AvailabilityForm = ({ availability = null, onClose, onSuccess, isDoctor })
 
       {!isDoctor && (
         <div>
-        <label className="block text-sm font-medium mb-1">Doctor</label>
-
+          <label className="block text-sm font-medium mb-1">Days of Week</label>
         <select
           value={doctorId}
           onChange={(e) => setDoctorId(e.target.value)}
           required
-          className="w-full border rounded-lg px-3 py-2 text-sm"
+            className="w-full text-gray-700 bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
         >
           <option value="">Select a doctor</option>
 
@@ -181,7 +180,7 @@ const AvailabilityForm = ({ availability = null, onClose, onSuccess, isDoctor })
                         ${
                           selected
                             ? "bg-blue-600 text-white border-blue-600"
-                            : "bg-white hover:bg-gray-100"
+                            : "bg-gray-100 border-gray-300 hover:bg-gray-100"
                         }`}
               >
                 {day.label}
@@ -198,7 +197,7 @@ const AvailabilityForm = ({ availability = null, onClose, onSuccess, isDoctor })
           value={startTime}
           onChange={(e) => setStartTime(e.target.value)}
           required
-          className="w-full border rounded-lg px-3 py-2 text-sm"
+          className="w-full text-gray-700 bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none transition"
         />
       </div>
 
@@ -210,7 +209,7 @@ const AvailabilityForm = ({ availability = null, onClose, onSuccess, isDoctor })
           value={endTime}
           onChange={(e) => setEndTime(e.target.value)}
           required
-          className="w-full border rounded-lg px-3 py-2 text-sm"
+          className="w-full text-gray-700 bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none transition"
         />
       </div>
 
@@ -221,7 +220,7 @@ const AvailabilityForm = ({ availability = null, onClose, onSuccess, isDoctor })
         <select
           value={isAvailable}
           onChange={(e) => setIsAvailable(e.target.value === "true")}
-          className="w-full border rounded-lg px-3 py-2 text-sm"
+          className="w-full text-gray-700 bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none transition"
         >
           <option value="true">Available</option>
           <option value="false">Not Available</option>
