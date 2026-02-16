@@ -15,7 +15,7 @@ const HomePage = () => {
       <div className="flex flex-col gap-3 w-full max-w-md mx-auto">
         <button
           onClick={() => setModalType("add")}
-          className="flex justify-center items-center gap-2 px-4 py-2 bg-orange-500 text-white p-2 rounded"
+          className="flex justify-center items-center gap-2 px-4 py-2 bg-orange-800 text-white p-2 rounded"
           >
             <CirclePlus/> Create Appointment
           </button>

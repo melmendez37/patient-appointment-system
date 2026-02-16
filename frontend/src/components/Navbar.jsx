@@ -25,10 +25,10 @@ const Navbar = () => {
           <div className="flex gap-4 items-center ">
             {user && (
               <div className="flex justify-between gap-8">
-                <Link to="/dashboard/appointments">Appointments</Link>
-                <Link to="/dashboard/schedules">Availability</Link>
+                <Link className="hover:underline" to="/dashboard/appointments">Appointments</Link>
+                <Link className="hover:underline" to="/dashboard/schedules">Availability</Link>
                 {user?.user.role === "admin" && (
-                  <Link to="/dashboard/users">Users</Link>
+                  <Link className="hover:underline" to="/dashboard/users">Users</Link>
                 )}
                 <Link to="/dashboard/profile"><CircleUser/></Link>
                 <button onClick={handleClick}><LogOut/></button>

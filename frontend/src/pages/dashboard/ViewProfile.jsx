@@ -62,7 +62,7 @@ const ViewProfile = () => {
       {/* Optional Edit Button */}
       <div className="flex gap-4 mt-6">
         <button
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+          className="w-full bg-blue-800 hover:bg-blue-900 text-white font-medium py-2 px-4 rounded-lg transition-colors"
           onClick={() => {
             setModalType("profile");
           }}
@@ -71,7 +71,7 @@ const ViewProfile = () => {
         </button>
 
         <button
-          className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+          className="w-full bg-green-800 hover:bg-green-900 text-white font-medium py-2 px-4 rounded-lg transition-colors"
           onClick={() => {
             setModalType("password");
           }}

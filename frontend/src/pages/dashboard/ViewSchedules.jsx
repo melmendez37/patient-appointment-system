@@ -45,7 +45,7 @@ const ViewSchedules = () => {
         <h1 className="text-2xl font-bold mb-6 text-gray-900">Schedules</h1>
         {!isDoctor && (
           <button
-          className="px-4 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition"
+          className="px-4 py-2 rounded-lg bg-blue-800 text-white font-medium hover:bg-blue-900 transition"
           onClick={() => {
             setEditingAvailability(null);
             setIsModalOpen(true);

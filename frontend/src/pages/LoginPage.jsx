@@ -46,7 +46,7 @@ const LoginPage = () => {
                             {showPassword ? <EyeOff/> : <Eye/>}
                         </button>
                     </div>
-                    <button disabled={isLoading} className='bg-blue-500 text-white p-3 rounded hover:bg-blue-600 transition mt-4'>Log In</button>
+                    <button disabled={isLoading} className='bg-blue-800 text-white p-3 rounded hover:bg-blue-900 transition mt-4'>Log In</button>
                     {error && <div className='text-red-500 font-semibold text-center'>{error}</div>}
                 </form>
             </div>

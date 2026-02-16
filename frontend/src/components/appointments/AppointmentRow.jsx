@@ -59,14 +59,14 @@ const AppointmentRow = ({
       <div className="flex gap-8">
           {(isDoctor || isStaff) && (
             <button 
-            className="text-blue-600 hover:text-blue-800 font-medium"
+            className="text-blue-800 hover:text-blue-900 font-medium"
             onClick={() => onEdit(appointment)}
             >
             <Pencil/>
           </button>
           )}
           {isStaff && (
-            <button className="text-red-600 hover:text-red-800 font-medium">
+            <button className="text-red-700 hover:text-red-800 font-medium">
             <Trash/>
           </button>
           )}

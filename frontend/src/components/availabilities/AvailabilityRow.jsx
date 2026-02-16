@@ -48,7 +48,7 @@ const AvailabilityRow = ({availabilities, canManage, onEdit, isDoctor}) => {
 
         {canManage && (
           <button
-            className="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
+            className="text-blue-800 hover:text-blue-900 text-sm font-medium transition-colors"
             onClick={() => onEdit(availabilities)}
           >
             <Pencil/>

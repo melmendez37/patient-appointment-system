@@ -34,7 +34,7 @@ const ViewUsers = () => {
       <div className="flex justify-between items-start p-2">
         <h1 className="text-2xl font-bold mb-6 text-gray-900">Users</h1>
         <button
-          className="px-4 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition"
+          className="px-4 py-2 rounded-lg bg-blue-800 text-white font-medium hover:bg-blue-900 transition"
           onClick={() => {
             setEditingUser(null);
             setIsModalOpen(true);
