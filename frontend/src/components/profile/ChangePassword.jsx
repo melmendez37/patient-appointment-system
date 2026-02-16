@@ -1,9 +1,14 @@
 import React, {useState, useEffect} from 'react'
 import {useAuthContext} from "../../hooks/useAuthContext";
+import {Eye, EyeOff} from 'lucide-react'
 
 const ChangePassword = ({onClose}) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
     const {user} = useAuthContext();
 
@@ -70,9 +75,9 @@ const ChangePassword = ({onClose}) => {
         <div className="bg-white rounded-xl p-6 w-full max-w-lg shadow-lg">
             <h2 className="text-lg font-semibold mb-4">Change password</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
+                <div className='relative'>
                     <input
-                        type="password"
+                        type={showCurrentPassword ? "text" : "password"}
                         id="currentPassword"
                         name='currentPassword'
                         value={formData.currentPassword}
@@ -80,10 +85,16 @@ const ChangePassword = ({onClose}) => {
                         onChange={handleChange}
                         className="w-full bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
                     />
+                    <button 
+                            type='button'
+                            onClick={() => setShowCurrentPassword(prev => !prev)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
+                            {showCurrentPassword ? <EyeOff/> : <Eye/>}
+                        </button>
                 </div>
-                <div>
+                <div className='relative'>
                     <input
-                        type="password"
+                        type={showNewPassword ? "text" : "password"}
                         id="newPassword"
                         name='newPassword'
                         value={formData.newPassword}
@@ -91,10 +102,16 @@ const ChangePassword = ({onClose}) => {
                         onChange={handleChange}
                         className="w-full bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
                     />
+                    <button 
+                            type='button'
+                            onClick={() => setShowNewPassword(prev => !prev)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
+                            {showNewPassword ? <EyeOff/> : <Eye/>}
+                        </button>
                 </div>
-                <div>
+                <div className='relative'>
                     <input
-                        type="password"
+                        type={showConfirmPassword ? "text" : "password"}
                         id="confirmPassword"
                         name='confirmPassword'
                         value={formData.confirmPassword}
@@ -102,6 +119,13 @@ const ChangePassword = ({onClose}) => {
                         onChange={handleChange}
                         className="w-full bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
                     />
+
+                     <button 
+                            type='button'
+                            onClick={() => setShowConfirmPassword(prev => !prev)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
+                            {showConfirmPassword ? <EyeOff/> : <Eye/>}
+                        </button>
                 </div>
                 {error && (
                     <div className="text-red-600 text-sm">{error}</div>

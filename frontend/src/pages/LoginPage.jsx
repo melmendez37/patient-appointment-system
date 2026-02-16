@@ -2,11 +2,13 @@ import React from 'react'
 import { useState } from 'react'
 import { useLogin } from '../hooks/useLogin'
 import Navbar from '../components/Navbar';
+import {Eye, EyeOff} from 'lucide-react';
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const { login, isLoading, error } = useLogin();
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -29,13 +31,21 @@ const LoginPage = () => {
                         placeholder='Email address'
                     />
 
-                    <input 
-                        type="password" 
-                        onChange={(e) => setPassword(e.target.value)} 
-                        value={password}
-                        className="w-full text-gray-700 bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                        placeholder='Password'
-                    />
+                    <div className="relative">
+                        <input 
+                            type={showPassword ? "text" : "password"}
+                            onChange={(e) => setPassword(e.target.value)} 
+                            value={password}
+                            className="w-full text-gray-700 bg-gray-100 p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            placeholder='Password'
+                        />
+                        <button 
+                            type='button'
+                            onClick={() => setShowPassword(prev => !prev)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
+                            {showPassword ? <EyeOff/> : <Eye/>}
+                        </button>
+                    </div>
                     <button disabled={isLoading} className='bg-blue-500 text-white p-3 rounded hover:bg-blue-600 transition mt-4'>Log In</button>
                     {error && <div className='text-red-500 font-semibold text-center'>{error}</div>}
                 </form>
