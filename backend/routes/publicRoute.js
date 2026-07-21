@@ -1,6 +1,9 @@
 import express from "express";
 import { validateFields } from "../middleware/validateFields.js";
-import { createAppointment, verifyAppointmentAccess, getAppointmentById, updateAppointmentById, getDoctors, getAvailableDays, getAvailableSlots } from "../controllers/public/publicController.js";
+import { createAppointment, getAppointmentById, updateAppointmentById } from "../controllers/public/publicController.js";
+import { verifyAppointmentAccess } from "../services/public/appointmentService.js";
+import { getDoctors } from "../services/public/doctorService.js";
+import { getAvailableDays, getAvailableSlots } from "../services/public/availabilityService.js";
 import { requirePublicAppointmentToken } from "../middleware/requirePublicAppointmentToken.js";
 
 const router = express.Router();
