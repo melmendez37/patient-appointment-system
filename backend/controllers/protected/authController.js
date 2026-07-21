@@ -5,7 +5,7 @@ export const login = async (req, res) => {
     console.log("Auth route passed")
   try {
     const { email, password } = req.body;
-
+console.log(req.body)
     const user = await User.login(email, password);
 
     //set up the facts for the token
