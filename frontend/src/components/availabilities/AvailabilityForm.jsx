@@ -67,7 +67,7 @@ const AvailabilityForm = ({ availability = null, onClose, onSuccess, isDoctor })
     if (!user) return;
     const fetchDoctors = async () => {
       try {
-        const res = await fetch("http://localhost:5555/users/doctors", {
+        const res = await fetch(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/users/doctors`, {
           headers: {
             Authorization: `Bearer ${user.token}`,
           },
@@ -110,8 +110,8 @@ const AvailabilityForm = ({ availability = null, onClose, onSuccess, isDoctor })
 
       const res = await fetch(
         isEdit
-          ? `http://localhost:5555/schedules/${availability._id}`
-          : "http://localhost:5555/schedules/",
+          ? `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/schedules/${availability._id}`
+          : `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/schedules/`,
 
         {
           method: isEdit ? "PUT" : "POST",

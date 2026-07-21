@@ -18,7 +18,7 @@ const ViewSchedules = () => {
   const [editingAvailability, setEditingAvailability] = useState(null);
 
   const fetchAvailabilities = async () => {
-    const response = await fetch("http://localhost:5555/schedules", {
+    const response = await fetch(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/schedules`, {
       headers: {
         Authorization: `Bearer ${user.token}`,
       },

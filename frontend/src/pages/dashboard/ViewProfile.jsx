@@ -13,7 +13,7 @@ const ViewProfile = () => {
   const fetchProfile = async () => {
       if(!user) return;
       const response = await fetch(
-        `http://localhost:5555/users/${user.user.id}`,
+        `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/users/${user.user.id}`,
         {
           headers: { Authorization: `Bearer ${user.token}` },
         },

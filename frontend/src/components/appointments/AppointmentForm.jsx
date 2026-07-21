@@ -77,7 +77,7 @@ const AppointmentForm = ({
 
     const fetchAvailableTimes = async () => {
       const res = await fetch(
-        `http://localhost:5555/schedules/${doctorId}/available-slots?date=${selectedDate}`,
+        `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/schedules/${doctorId}/available-slots?date=${selectedDate}`,
         {
           headers: { Authorization: `Bearer ${user.token}` },
         },
@@ -100,7 +100,7 @@ const AppointmentForm = ({
     if (!user) return;
     const fetchDoctors = async () => {
       try {
-        const res = await fetch("http://localhost:5555/users/doctors", {
+        const res = await fetch(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/users/doctors`, {
           headers: {
             Authorization: `Bearer ${user.token}`,
           },
@@ -125,7 +125,7 @@ const AppointmentForm = ({
     if (!doctorId) return;
     const fetchAvailableDays = async () => {
       const res = await fetch(
-        `http://localhost:5555/schedules/${doctorId}/available-days`,
+        `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/schedules/${doctorId}/available-days`,
         {
           headers: {
             Authorization: `Bearer ${user.token}`,
@@ -194,8 +194,8 @@ const AppointmentForm = ({
 
       const res = await fetch(
         isEdit
-          ? `http://localhost:5555/appointments/${appointment._id}`
-          : "http://localhost:5555/appointments/",
+          ? `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/appointments/${appointment._id}`
+          : `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/appointments/`,
 
         {
           method: isEdit ? "PUT" : "POST",

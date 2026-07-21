@@ -47,7 +47,7 @@ const ChangePassword = ({onClose}) => {
             };
 
             
-            const res = await fetch(`http://localhost:5555/users/${user.user.id}/password`, {
+            const res = await fetch(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/users/${user.user.id}/password`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

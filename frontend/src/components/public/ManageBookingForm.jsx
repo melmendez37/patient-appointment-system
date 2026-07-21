@@ -24,7 +24,7 @@ const ManageBookingForm = (onClose) => {
 
       try {
         const res = await fetch(
-          `http://localhost:5555/public/appointments/${id}`,
+          `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/public/appointments/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -72,7 +72,7 @@ const ManageBookingForm = (onClose) => {
           startTime: dateObj.toISOString(),
         };
         
-        const res = await fetch(`http://localhost:5555/public/update/${id}`, {
+        const res = await fetch(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/public/update/${id}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",

@@ -23,7 +23,7 @@ const ProfileForm = ({ profile, onClose, onSuccess }) => {
     const fetchUser = async () => {
       if (!user) return;
       try {
-        const res = await fetch(`http://localhost:5555/users/${user.user.id}`, {
+        const res = await fetch(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/users/${user.user.id}`, {
           headers: {
             Authorization: `Bearer ${user.token}`,
           },
@@ -46,7 +46,7 @@ const ProfileForm = ({ profile, onClose, onSuccess }) => {
     if (!user) return;
     const fetchDoctors = async () => {
       try {
-        const res = await fetch("http://localhost:5555/users/doctors", {
+        const res = await fetch(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/users/doctors`, {
           headers: {
             Authorization: `Bearer ${user.token}`,
           },
@@ -115,7 +115,7 @@ const ProfileForm = ({ profile, onClose, onSuccess }) => {
         payload.isActive = formData.isActive;
       }
 
-      const res = await fetch(`http://localhost:5555/users/${profile._id}`, {
+      const res = await fetch(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/users/${profile._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

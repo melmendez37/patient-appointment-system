@@ -22,7 +22,7 @@ const ViewAppointmentDetails = () => {
 
       try {
         const res = await fetch(
-          `http://localhost:5555/public/appointments/${id}`,
+          `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/public/appointments/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

@@ -25,7 +25,7 @@ const CreateAppointmentForm = () => {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const res = await fetch("http://localhost:5555/public/doctors");
+        const res = await fetch(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/public/doctors`);
         const json = await res.json();
 
         if (res.ok) {
@@ -47,7 +47,7 @@ const CreateAppointmentForm = () => {
     
     const fetchAvailableDays = async () => {
       const res = await fetch(
-        `http://localhost:5555/public/schedules/${formData.doctor}/available-days`,
+        `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/public/schedules/${formData.doctor}/available-days`,
       );
 
       const json = await res.json();
@@ -70,7 +70,7 @@ const CreateAppointmentForm = () => {
     if (!selectedDate || !formData.doctor) return;
     const fetchAvailableTimes = async () => {
       const res = await fetch(
-        `http://localhost:5555/public/schedules/${formData.doctor}/available-slots?date=${selectedDate}`,
+        `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/public/schedules/${formData.doctor}/available-slots?date=${selectedDate}`,
       );
 
       const json = await res.json();
@@ -121,7 +121,7 @@ const CreateAppointmentForm = () => {
 
     console.log("Submitting appointment with payload:", payload);
 
-      const res = await fetch("http://localhost:5555/public/add", {
+      const res = await fetch(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/public/add`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

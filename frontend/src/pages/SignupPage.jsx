@@ -48,7 +48,7 @@ const SignupPage = ({ user, onClose, onSuccess }) => {
     const fetchDoctors = async () => {
       if (!authUser) return;
       try {
-        const res = await fetch("http://localhost:5555/users/doctors", {
+        const res = await fetch(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/users/doctors`, {
           headers: {
             Authorization: `Bearer ${authUser.token}`,
           },
@@ -94,8 +94,8 @@ const SignupPage = ({ user, onClose, onSuccess }) => {
 
       const res = await fetch(
         isEdit
-          ? `http://localhost:5555/users/${user._id}`
-          : "http://localhost:5555/users/",
+          ? `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/users/${user._id}`
+          : `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/users/`,
         {
           method: isEdit ? "PUT" : "POST",
           headers: {

@@ -18,7 +18,7 @@ const ViewAppointments = () => {
   const [editingAppointment, setEditingAppointment] = useState(null);
 
   const fetchAppointments = async () => {
-      const response = await fetch("http://localhost:5555/appointments", {
+      const response = await fetch(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/appointments`, {
         headers: {
           Authorization: `Bearer ${user.token}`,
         },

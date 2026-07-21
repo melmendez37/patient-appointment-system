@@ -13,7 +13,7 @@ const ViewUsers = () => {
 
   const fetchUsers = async () => {
       if (!user) return;
-      const response = await fetch(`http://localhost:5555/users/`, {
+      const response = await fetch(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/users/`, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
       const json = await response.json();

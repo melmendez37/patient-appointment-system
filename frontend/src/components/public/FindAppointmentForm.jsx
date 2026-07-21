@@ -29,7 +29,7 @@ const FindAppointmentForm = ({ modalType, onClose }) => {
         ref: formData.ref,
       };
 
-      const res = await fetch(`http://localhost:5555/public/verify`, {
+      const res = await fetch(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/public/verify`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
