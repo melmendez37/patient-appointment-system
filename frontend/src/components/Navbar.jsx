@@ -37,6 +37,7 @@ const Navbar = () => {
             {!user && (
               <div className="flex justify-around gap-4">
                 <Link className="flex justify-center items-center gap-3" to="/login">Login</Link>
+                <Link className="flex justify-center items-center gap-3" to="/signup">Signup</Link>
               </div>
             )}
           </div>

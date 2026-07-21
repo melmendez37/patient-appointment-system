@@ -39,7 +39,7 @@ export const useLogin = () => {
                 dispatch({ type: 'LOGIN', payload: json }); 
 
                 setIsLoading(false);
-                navigate("/dashboard", {replace: true});
+                navigate("/dashboard/appointments", {replace: true});
             }
         } catch (error) {
             setError('Network error. Please try again later.');
